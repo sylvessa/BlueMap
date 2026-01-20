@@ -145,6 +145,7 @@ public enum BlockID {
 	DIODE_ON(94, "minecraft:repeater"),
 	LOCKED_CHEST(95, "minecraft:chest_locked_aprilfools_super_old_legacy_we_should_not_even_have_this"),
 	TRAP_DOOR(96, "minecraft:oak_trapdoor");
+	STONEBRICK(98, "minecraft:stonebrick");
 	
 	private final int id;
 	private final int data;
