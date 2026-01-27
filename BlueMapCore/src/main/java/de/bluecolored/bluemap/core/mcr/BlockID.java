@@ -2,6 +2,8 @@ package de.bluecolored.bluemap.core.mcr;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public enum BlockID {
 	// block names copied from Bukkit
@@ -144,8 +146,36 @@ public enum BlockID {
 	DIODE_OFF(93, "minecraft:repeater"),
 	DIODE_ON(94, "minecraft:repeater"),
 	LOCKED_CHEST(95, "minecraft:chest_locked_aprilfools_super_old_legacy_we_should_not_even_have_this"),
-	TRAP_DOOR(96, "minecraft:oak_trapdoor");
-	STONEBRICK(98, "minecraft:stonebrick");
+	TRAP_DOOR(96, "minecraft:oak_trapdoor"),
+	STONEBRICK(98, "minecraft:stone_bricks"),
+	STONEBRICK_MOSSY(98, 1, "minecraft:mossy_stone_bricks"),
+	STONEBRICK_CRACKED(98, 2, "minecraft:cracked_stone_bricks"),
+	STONEBRICK_CHISELED(98, 3, "minecraft:chiseled_stone_bricks"),
+	BROWN_MUSHROOM_BLOCK(99, "minecraft:brown_mushroom_block"),
+	RED_MUSHROOM_BLOCK(100, "minecraft:red_mushroom_block"),
+	IRON_BARS(101, "minecraft:iron_bars"),
+	GLASS_PANE(102, "minecraft:glass_pane"),
+	MELON_BLOCK(103, "minecraft:melon"),
+	PUMPKIN_STEM(104, "minecraft:pumpkin_stem"),
+	MELON_STEM(105, "minecraft:melon_stem"),
+	VINES(106, "minecraft:vine"),
+	FENCE_GATE(107, "minecraft:oak_fence_gate"),
+	BRICK_STAIRS(108, "minecraft:brick_stairs"),
+	STONE_BRICK_STAIRS(109, "minecraft:stone_brick_stairs"),
+	MYCELIUM(110, "minecraft:mycelium"),
+	LILY_PAD(111, "minecraft:lily_pad"),
+	NETHER_BRICK(112, "minecraft:nether_bricks"),
+	NETHER_BRICK_FENCE(113, "minecraft:nether_brick_fence"),
+	NETHER_BRICK_STAIRS(114, "minecraft:nether_brick_stairs"),
+	NETHER_WART(115, "minecraft:nether_wart"),
+	ENCHANTMENT_TABLE(116, "minecraft:enchanting_table"),
+	BREWING_STAND(117, "minecraft:brewing_stand"),
+	CAULDRON(118, "minecraft:cauldron"),
+	END_PORTAL(119, "minecraft:end_portal"),
+	END_PORTAL_FRAME(120, "minecraft:end_portal_frame"),
+	END_STONE(121, "minecraft:end_stone"),
+	DRAGON_EGG(122, "minecraft:dragon_egg"),
+	;
 	
 	private final int id;
 	private final int data;
@@ -263,11 +293,11 @@ public enum BlockID {
 	public static boolean isOpaque(BlockID bid) {
 		return (bid == AIR || bid == YELLOW_FLOWER || bid == RED_ROSE || bid == TORCH_WALL || bid == TORCH_GROUND ||
 				bid == REDSTONE_TORCH_ON_WALL || bid == REDSTONE_TORCH_ON_GROUND || bid == REDSTONE_TORCH_OFF_WALL || 
-				bid == REDSTONE_TORCH_OFF_GROUND || bid == LEVER || bid == LADDER || bid == MOB_SPAWNER || bid == PORTAL || 
+				bid == REDSTONE_TORCH_OFF_GROUND || bid == LEVER || bid == LADDER || bid == VINES || bid == MOB_SPAWNER || bid == PORTAL || 
 				bid == SUGAR_CANE_BLOCK || bid == SIGN_POST || bid == WALL_SIGN || bid == SOIL || bid == CROPS || 
 				bid == SNOW || bid == WEB || bid == REDSTONE_WIRE || bid == STONE_PLATE || bid == WOOD_PLATE ||
 				bid == FIRE || bid == FENCE || bid == WOODEN_DOOR || bid == IRON_DOOR_BLOCK || bid == CACTUS || 
-				bid == CAKE_BLOCK || bid == STONE_BUTTON || bid == BED || bid == TRAP_DOOR || bid == GLASS ||
+				bid == CAKE_BLOCK || bid == STONE_BUTTON || bid == BED || bid == TRAP_DOOR || bid == GLASS || bid == GLASS_PANE || bid == IRON_BARS ||
 				isStair(bid) || isRail(bid) || isLeaves(bid) || isFluid(bid) || isPistonVariant(bid)) ? false : true;
 	}
 	
@@ -545,6 +575,8 @@ public enum BlockID {
 			else if (metadata == 5)
 				properties.put("facing", "east");
 			
+		} else if (bid == BlockID.VINES) {
+			// i am smart
 		} else if (bid == BlockID.TRAP_DOOR) {
 			
 			if (metadata < 4)

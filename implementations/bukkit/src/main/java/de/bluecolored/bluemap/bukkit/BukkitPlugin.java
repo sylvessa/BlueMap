@@ -96,11 +96,8 @@ public class BukkitPlugin extends JavaPlugin implements ServerInterface {
         }
 
         //register events
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, new BukkitPlayerListener(), Event.Priority.Monitor, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, new BukkitPlayerListener(), Event.Priority.Monitor, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, new EventForwarder(), Event.Priority.Monitor, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, new EventForwarder(), Event.Priority.Monitor, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, new EventForwarder(), Event.Priority.Monitor, this);
+        getServer().getPluginManager().registerEvents(new EventForwarder(), this);
+        getServer().getPluginManager().registerEvents(new BukkitPlayerListener(), this);
 
         //register commands
         try {

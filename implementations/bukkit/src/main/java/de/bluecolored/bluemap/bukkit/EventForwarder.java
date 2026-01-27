@@ -28,13 +28,14 @@ import de.bluecolored.bluemap.common.serverinterface.ServerEventListener;
 import de.bluecolored.bluemap.common.plugin.text.Text;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerListener;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class EventForwarder extends PlayerListener {
+public class EventForwarder implements Listener {
 
     private final Collection<ServerEventListener> listeners;
 
@@ -50,17 +51,17 @@ public class EventForwarder extends PlayerListener {
         listeners.clear();
     }
 
-    @Override
+    @EventHandler
     public synchronized void onPlayerJoin(PlayerJoinEvent evt) {
         for (ServerEventListener listener : listeners) listener.onPlayerJoin(evt.getPlayer().getUniqueId());
     }
 
-    @Override
+    @EventHandler
     public synchronized void onPlayerQuit(PlayerQuitEvent evt) {
         for (ServerEventListener listener : listeners) listener.onPlayerJoin(evt.getPlayer().getUniqueId());
     }
 
-    @Override
+    @EventHandler
     public synchronized void onPlayerChat(PlayerChatEvent evt) {
         if (evt.isCancelled()) return;
         String message = String.format(evt.getFormat(), evt.getPlayer().getDisplayName(), evt.getMessage());

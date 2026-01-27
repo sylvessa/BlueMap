@@ -32,7 +32,6 @@ dependencies {
 	api ("de.bluecolored.bluemap.common:BlueMapCommon") {
 		//exclude dependencies provided by bukkit
 		exclude( group = "com.google.guava", module = "guava" )
-		exclude( group = "com.google.code.gson", module = "gson" )
 	}
 
 	shadow (fileTree("libs"))
@@ -105,6 +104,7 @@ tasks.shadowJar {
 	relocate ("org.apache.commons.lang3", "de.bluecolored.shadow.apache.commons.lang3")
 	relocate ("org.apache.commons.logging", "de.bluecolored.shadow.apache.commons.logging")
 	relocate ("org.apache.commons.pool2", "de.bluecolored.shadow.apache.commons.pool2")
+	relocate ("com.google.gson", "de.bluecolored.shadow.gson")
 }
 
 tasks.register("release") {
