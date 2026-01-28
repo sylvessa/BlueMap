@@ -38,6 +38,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.UUID;
 
 public class MojangSkinProvider implements SkinProvider {
@@ -55,26 +56,28 @@ public class MojangSkinProvider implements SkinProvider {
         }
     }
 
+    public UUID getUUID(String username) {
+        return getUUIDFromUsername(username);
+    }
+
     private Reader requestProfileJson(UUID playerUUID) throws IOException {
         URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + playerUUID);
-        return new InputStreamReader(url.openStream());
+        return new InputStreamReader(url.openStream(), "UTF-8");
     }
 
     private String readTextureInfoJson(JsonElement json) throws IOException {
         try {
             JsonArray properties = json.getAsJsonObject().getAsJsonArray("properties");
-
             for (JsonElement element : properties) {
                 if (element.getAsJsonObject().get("name").getAsString().equals("textures")) {
-                    return new String(Base64.getDecoder().decode(element.getAsJsonObject().get("value").getAsString().getBytes()));
+                    String value = element.getAsJsonObject().get("value").getAsString();
+                    return new String(Base64.getDecoder().decode(value.getBytes("UTF-8")), "UTF-8");
                 }
             }
-
             throw new IOException("No texture info found!");
         } catch (NullPointerException | IllegalStateException | ClassCastException e) {
             throw new IOException(e);
         }
-
     }
 
     private String readTextureUrl(JsonElement json) throws IOException {
@@ -88,4 +91,22 @@ public class MojangSkinProvider implements SkinProvider {
         }
     }
 
+    private UUID getUUIDFromUsername(String username) {
+        try {
+            URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + username);
+            try (Scanner scanner = new Scanner(url.openStream(), "UTF-8")) {
+                if (!scanner.hasNext()) return null;
+                String jsonStr = scanner.useDelimiter("\\A").next();
+                JsonElement json = new JsonParser().parse(jsonStr);
+                String rawId = json.getAsJsonObject().get("id").getAsString();
+                return UUID.fromString(rawId.replaceFirst(
+                        "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})",
+                        "$1-$2-$3-$4-$5"
+                ));
+            }
+        } catch (IOException e) {
+            Logger.global.logDebug("Failed to get UUID from username: '" + username + "' - " + e);
+            return null;
+        }
+    }
 }

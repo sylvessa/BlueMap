@@ -30,7 +30,10 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
+import de.bluecolored.bluemap.common.plugin.skins.MojangSkinProvider;
+import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,17 +54,23 @@ public class EventForwarder implements Listener {
         listeners.clear();
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public synchronized void onPlayerJoin(PlayerJoinEvent evt) {
-        for (ServerEventListener listener : listeners) listener.onPlayerJoin(evt.getPlayer().getUniqueId());
+        MojangSkinProvider mojangSkinProvider = new MojangSkinProvider();
+        UUID playerUUID = mojangSkinProvider.getUUID(evt.getPlayer().getName());
+
+        for (ServerEventListener listener : listeners) listener.onPlayerJoin(playerUUID);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public synchronized void onPlayerQuit(PlayerQuitEvent evt) {
-        for (ServerEventListener listener : listeners) listener.onPlayerJoin(evt.getPlayer().getUniqueId());
+        MojangSkinProvider mojangSkinProvider = new MojangSkinProvider();
+        UUID playerUUID = mojangSkinProvider.getUUID(evt.getPlayer().getName());
+
+        for (ServerEventListener listener : listeners) listener.onPlayerLeave(playerUUID);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public synchronized void onPlayerChat(PlayerChatEvent evt) {
         if (evt.isCancelled()) return;
         String message = String.format(evt.getFormat(), evt.getPlayer().getDisplayName(), evt.getMessage());

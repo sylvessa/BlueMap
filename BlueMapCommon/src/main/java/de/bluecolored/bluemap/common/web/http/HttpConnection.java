@@ -119,15 +119,15 @@ public class HttpConnection implements SelectionConsumer {
     }
 
     private void handleIOException(Channel channel, IOException e) {
+        String url = request != null ? request.getPath() : "unknown";
         request.clear();
         response = null;
 
-        Logger.global.logDebug("Failed to process selection: " + e);
+        Logger.global.logDebug("Failed to process selection for URL " + url + ": " + e);
         try {
             channel.close();
         } catch (IOException e2) {
-            Logger.global.logWarning("Failed to close channel" + e2);
+            Logger.global.logWarning("Failed to close channel: " + e2);
         }
     }
-
 }

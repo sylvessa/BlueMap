@@ -262,9 +262,7 @@ public class Plugin implements ServerEventListener {
 
                 //start skin updater
                 this.skinUpdater = new PlayerSkinUpdater(this);
-                if (pluginConfig.isLivePlayerMarkers()) {
-                    serverInterface.registerListener(skinUpdater);
-                }
+                serverInterface.registerListener(skinUpdater);
 
                 //init timer
                 daemonTimer = new Timer("BlueMap-Plugin-DaemonTimer", true);

@@ -42,6 +42,9 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.bluecolored.bluemap.common.plugin.skins.MojangSkinProvider;
+import java.util.UUID;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -96,7 +99,7 @@ public class BukkitPlugin extends JavaPlugin implements ServerInterface {
         }
 
         //register events
-        getServer().getPluginManager().registerEvents(new EventForwarder(), this);
+        getServer().getPluginManager().registerEvents(eventForwarder, this);
         getServer().getPluginManager().registerEvents(new BukkitPlayerListener(), this);
 
         //register commands
@@ -117,8 +120,11 @@ public class BukkitPlugin extends JavaPlugin implements ServerInterface {
         this.onlinePlayerList.clear();
         this.onlinePlayerMap.clear();
         for (org.bukkit.entity.Player player : getServer().getOnlinePlayers()) {
-            BukkitPlayer bukkitPlayer = new BukkitPlayer(player.getUniqueId(), player.getName());
-            onlinePlayerMap.put(player.getUniqueId(), bukkitPlayer);
+            MojangSkinProvider mojangSkinProvider = new MojangSkinProvider();
+            UUID playerUUID = mojangSkinProvider.getUUID(player.getName());
+            
+            BukkitPlayer bukkitPlayer = new BukkitPlayer(playerUUID, player.getName());
+            onlinePlayerMap.put(playerUUID, bukkitPlayer);
             onlinePlayerList.add(bukkitPlayer);
         }
 

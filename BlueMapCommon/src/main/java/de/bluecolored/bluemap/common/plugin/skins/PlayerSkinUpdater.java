@@ -63,7 +63,7 @@ public class PlayerSkinUpdater implements ServerEventListener {
     }
 
     public CompletableFuture<Void> updateSkin(final UUID playerUuid) {
-
+        //Logger.global.logDebug("Scheduling skin update for player UUID: " + playerUuid);
         // only update if last update was longer then an hour ago
         long lastUpdate = skinUpdates.getOrDefault(playerUuid, 0L);
         long now = System.currentTimeMillis();
@@ -89,6 +89,8 @@ public class PlayerSkinUpdater implements ServerEventListener {
                 return;
             }
 
+            //Logger.global.logDebug("Updating skin for player UUID: " + playerUuid + " with skin " + skin.get());
+
             BufferedImage playerHead = playerMarkerIconFactory.apply(playerUuid, skin.get());
 
             for (BmMap map : maps.values()) {
@@ -103,6 +105,7 @@ public class PlayerSkinUpdater implements ServerEventListener {
 
     @Override
     public void onPlayerJoin(UUID playerUuid) {
+        //Logger.global.logDebug("UPDATING SKIN FOR PLAYER: " + playerUuid);
         updateSkin(playerUuid).exceptionally(ex -> {
             Logger.global.logError("Failed to update player skin: " + playerUuid, ex);
             return null;
