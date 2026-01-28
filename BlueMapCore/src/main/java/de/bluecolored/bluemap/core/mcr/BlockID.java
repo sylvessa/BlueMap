@@ -212,8 +212,8 @@ public enum BlockID {
 	ANVIL(145, "minecraft:anvil"),
 	;
 	
-	private final int id;
-	private final int data;
+	public final int id;
+	public final int data;
 	private final String val;
 	private final HashMap<String, String> properties = new HashMap<>();
 	private final static BlockID[] VALUES = BlockID.values();
