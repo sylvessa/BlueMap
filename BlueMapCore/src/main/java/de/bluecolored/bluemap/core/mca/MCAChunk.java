@@ -27,6 +27,7 @@ package de.bluecolored.bluemap.core.mca;
 import de.bluecolored.bluemap.core.world.BlockState;
 import de.bluecolored.bluemap.core.world.Chunk;
 import de.bluecolored.bluemap.core.world.LightData;
+import de.bluecolored.bluemap.core.logger.Logger;
 import net.querz.nbt.CompoundTag;
 
 import java.io.IOException;
@@ -81,10 +82,14 @@ public abstract class MCAChunk implements Chunk {
     }
 
     @Override
-    public int getWorldSurfaceY(int x, int z) { return 0; }
+    public int getWorldSurfaceY(int x, int z) {
+        return 0;
+    }
 
     @Override
-    public int getOceanFloorY(int x, int z) { return 0; }
+    public int getOceanFloorY(int x, int z) {
+        return 0;
+    }
 
     protected MCAWorld getWorld() {
         return world;
@@ -92,20 +97,30 @@ public abstract class MCAChunk implements Chunk {
 
     public static MCAChunk create(MCAWorld world, CompoundTag chunkTag) throws IOException {
         int version = chunkTag.getInt("DataVersion");
+        // Logger.global.logInfo("MCARegion ver" + version);
 
-        if (version < 2200) return new ChunkAnvil113(world, chunkTag);
-        if (version < 2500) return new ChunkAnvil115(world, chunkTag);
-        if (version < 2844) return new ChunkAnvil116(world, chunkTag);
-        return new ChunkAnvil118(world, chunkTag);
+        if (version == 0) {
+            // 1.2-1.6 lacks dataversion, i dont think much changed between any of them
+            return new ChunkAnvil12(world, chunkTag);
+        }
+
+        if (version < 2200)
+            return new ChunkAnvil113(world, chunkTag);
+        if (version < 2500)
+            return new ChunkAnvil115(world, chunkTag);
+        if (version < 2844)
+            return new ChunkAnvil116(world, chunkTag);
+
+        return new ChunkAnvil113(world, chunkTag);
     }
 
     @Override
     public String toString() {
         return "MCAChunk{" +
-               "world=" + world +
-               "dataVersion=" + dataVersion +
-               "isGenerated()=" + isGenerated() +
-               '}';
+                "world=" + world +
+                "dataVersion=" + dataVersion +
+                "isGenerated()=" + isGenerated() +
+                '}';
     }
 
 }

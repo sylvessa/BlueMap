@@ -52,6 +52,8 @@ public class MCARegion implements Region {
     private final Vector2i regionPos;
 
     public MCARegion(MCAWorld world, Path regionFile) throws IllegalArgumentException {
+        
+        Logger.global.logInfo("MCARegion init");
         this.world = world;
         this.regionFile = regionFile;
 
