@@ -9,8 +9,8 @@ plugins {
     id ("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
-fun String.runCommand(): String = ProcessBuilder(split("\\s(?=(?:[^'\"`]*(['\"`])[^'\"`]*\\1)*[^'\"`]*$)".toRegex()))
-    .directory(projectDir)
+fun String.runCommand(workingDir: File = projectDir): String = ProcessBuilder(split("\\s(?=(?:[^'\"`]*(['\"`])[^'\"`]*\\1)*[^'\"`]*$)".toRegex()))
+    .directory(workingDir)
     .redirectOutput(ProcessBuilder.Redirect.PIPE)
     .redirectError(ProcessBuilder.Redirect.PIPE)
     .start()
@@ -27,11 +27,13 @@ fun String.runCommand(): String = ProcessBuilder(split("\\s(?=(?:[^'\"`]*(['\"`]
         inputStream.bufferedReader().readText().trim()
     }
 
-val gitHash = "git rev-parse --verify HEAD".runCommand()
-val clean = "git status --porcelain".runCommand().isEmpty()
-val lastTag = "git describe --tags --abbrev=0".runCommand()
-val lastVersion = lastTag.substring(1) // remove the leading 'v'
-val commits = "git rev-list --count $lastTag..HEAD".runCommand()
+val gitRootDir = rootDir
+
+val gitHash = "git rev-parse --verify HEAD".runCommand(gitRootDir)
+val clean = "git status --porcelain".runCommand(gitRootDir).isEmpty()
+val lastTag = "git describe --tags --abbrev=0".runCommand(gitRootDir)
+val lastVersion = lastTag.removePrefix("v") // remove the leading 'v'
+val commits = "git rev-list --count $lastTag..HEAD".runCommand(gitRootDir)
 println("Git hash: $gitHash" + if (clean) "" else " (dirty)")
 
 group = "de.bluecolored.bluemap.api"

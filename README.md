@@ -6,6 +6,8 @@ I will make a branch or something soon to support some earlier CraftBukkit build
 
 Build with `gradlew :bukkit:release`
 
+If using 1.2 or above, add `worldtype: "mca"` to your world configs.
+
 Original project can be found [here](https://github.com/BlueMap-Minecraft/BlueMap)
 
 ## Currently supported methods: CLI and Bukkit (CB1060 and Poseidon)

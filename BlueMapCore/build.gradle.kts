@@ -29,7 +29,7 @@ fun String.runCommand(): String = ProcessBuilder(split("\\s(?=(?:[^'\"`]*(['\"`]
 val gitHash = "git rev-parse --verify HEAD".runCommand()
 val clean = "git status --porcelain".runCommand().isEmpty()
 val lastTag = if ("git tag".runCommand().isEmpty()) "" else "git describe --tags --abbrev=0".runCommand()
-val lastVersion = if (lastTag.isEmpty()) "dev" else lastTag.substring(1) // remove the leading 'v'
+val lastVersion = if (lastTag.isEmpty()) "dev" else lastTag.removePrefix("v") // remove the leading 'v'
 val commits = "git rev-list --count $lastTag..HEAD".runCommand()
 println("Git hash: $gitHash" + if (clean) "" else " (dirty)")
 
