@@ -10,10 +10,6 @@ If using 1.2 or above, add `worldtype: "mca"` to your world configs.
 
 Original project can be found [here](https://github.com/BlueMap-Minecraft/BlueMap)
 
-## Currently supported methods: CLI and Bukkit (CB1060 and Poseidon)
-
-Make sure to use the `bukkit` build only if you're using original CB1060. If you're using [Project Poseidon](https://github.com/RhysB/Project-Poseidon), choose the `poseidon` build.
-
 ## To get the Beta look:
 
 Make sure you generate the default BlueMap configuration first and accept the Minecraft EULA.
@@ -24,7 +20,7 @@ Make sure you generate the default BlueMap configuration first and accept the Mi
 - rename it to `01_programmers_art.zip`
 - move it to directory `config/resourcepacks/`, relative to your bluemap jar
 
-2. Get `Golden Days` resource pack (I recommend 1.19.4-base, v1.8.2)
+2. Get `Golden Days` resource pack (I recommend 1.19.4-base, v1.8.2) (OPTIONAL)
 
 - https://github.com/PoeticRainbow/golden-days/releases/tag/1.8.2
 - rename it to `02_golden_days.zip`
