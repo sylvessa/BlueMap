@@ -105,6 +105,7 @@ tasks.shadowJar {
 	relocate ("org.apache.commons.logging", "de.bluecolored.shadow.apache.commons.logging")
 	relocate ("org.apache.commons.pool2", "de.bluecolored.shadow.apache.commons.pool2")
 	relocate ("com.google.gson", "de.bluecolored.shadow.gson")
+	relocate ("com.fasterxml.jackson", "de.bluecolored.shadow.fasterxml.jackson")
 }
 
 tasks.register("release") {
