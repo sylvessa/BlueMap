@@ -148,7 +148,9 @@ public class ChunkAnvil12 extends MCAChunk {
 				props.put("snowy", (aboveId == 78 || aboveId == 80) ? "true" : "false");
 			}
 
-			return new BlockState(bid.getModernId(), props) {
+			BlockState state = BlockState.of(bid.getModernId(), props);
+
+			return new BlockState(state.getFormatted(), state.getProperties()) {
 				@Override
 				public boolean isAir() { return false; }
 			};
