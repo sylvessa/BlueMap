@@ -207,7 +207,26 @@ public class ChunkMcRegion extends MCRChunk {
             	
             	if (block_id_zplus == 85)
             		metadataToProperties.put("south", "true");
-            	
+            } else if (block_id == 102 || block_id == 101) {
+				// glass panes
+				// testinmg
+
+				int block_id_xmin = this.world.getChunkAtBlock(ox-1, y, oz).fromBlocksArray(ox-1, y, oz);
+				int block_id_xplus = this.world.getChunkAtBlock(ox+1, y, oz).fromBlocksArray(ox+1, y, oz);
+				int block_id_zmin = this.world.getChunkAtBlock(ox, y, oz-1).fromBlocksArray(ox, y, oz-1);
+				int block_id_zplus = this.world.getChunkAtBlock(ox, y, oz+1).fromBlocksArray(ox, y, oz+1);
+
+				if (BlockID.isOpaque(block_id_xmin) || block_id_xmin == 102 || block_id_xmin == 101)
+					metadataToProperties.put("west", "true");
+
+				if (BlockID.isOpaque(block_id_xplus) || block_id_xplus == 102 || block_id_xplus == 101)
+					metadataToProperties.put("east", "true");
+
+				if (BlockID.isOpaque(block_id_zmin) || block_id_zmin == 102 || block_id_zmin == 101)
+					metadataToProperties.put("north", "true");
+
+				if (BlockID.isOpaque(block_id_zplus) || block_id_zplus == 102 || block_id_zplus == 101)
+					metadataToProperties.put("south", "true");
             } else if (block_id == 54) {
             	// handle chests <pain>
             	

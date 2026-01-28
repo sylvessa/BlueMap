@@ -48,7 +48,8 @@ public class MojangSkinProvider implements SkinProvider {
         try (Reader reader = requestProfileJson(playerUUID)) {
             JsonParser parser = new JsonParser();
             String textureInfoJson = readTextureInfoJson(parser.parse(reader));
-            String textureUrl = readTextureUrl(parser.parse(textureInfoJson));
+            String textureUrl = readTextureUrl(parser.parse(textureInfoJson)).replace("http://", "https://");
+            Logger.global.logDebug("Skin url for '" + playerUUID + "' - " + textureUrl);
             return Optional.of(ImageIO.read(new URL(textureUrl)));
         } catch (IOException ex) {
             Logger.global.logDebug("Failed to load skin from mojang for player: '" + playerUUID + "' - " + ex);
