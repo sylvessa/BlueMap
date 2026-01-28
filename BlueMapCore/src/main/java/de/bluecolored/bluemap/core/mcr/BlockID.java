@@ -22,6 +22,7 @@ public enum BlockID {
 	LAVA(10, "minecraft:lava"),
 	STATIONARY_LAVA(11, "minecraft:lava"),
 	SAND(12, "minecraft:sand"),
+	RED_SAND(12, 1, "minecraft:red_sand"),
 	GRAVEL(13, "minecraft:gravel"),
 	GOLD_ORE(14, "minecraft:gold_ore"),
 	IRON_ORE(15, "minecraft:iron_ore"),
@@ -29,11 +30,13 @@ public enum BlockID {
 	OAK_LOG(17, "minecraft:oak_log"),
 	SPRUCE_LOG(17, 1, "minecraft:spruce_log"),
 	BIRCH_LOG(17, 2, "minecraft:birch_log"),
+	JUNGLE_LOG(17, 3, "minecraft:jungle_log"),
 	OAK_LEAVES(18, "minecraft:oak_leaves"),
 	SPRUCE_LEAVES(18, 1, "minecraft:spruce_leaves"),
 	BIRCH_LEAVES(18, 2, "minecraft:birch_leaves"),
-	SPECIAL_LEAVES(18, 3, "minecraft:acacia_leaves"),
+	SPECIAL_LEAVES(18, 3, "minecraft:jungle_leaves"),
 	SPONGE(19, "minecraft:sponge"),
+	WET_SPONGE(19, 1, "minecraft:wet_sponge"),
 	GLASS(20, "minecraft:glass"),
 	LAPIS_ORE(21, "minecraft:lapis_ore"),
 	LAPIS_BLOCK(22, "minecraft:lapis_block"),
@@ -82,14 +85,17 @@ public enum BlockID {
 	DOUBLE_STEP_SANDSTONE(43, 1, "minecraft:sandstone_slab"),
 	DOUBLE_STEP_OAK(43, 2, "minecraft:oak_slab"),
 	DOUBLE_STEP_COBBLESTONE(43, 3, "minecraft:cobblestone_slab"),
-	DOUBLE_STEP_SPECIAL_STONE(43, 4, "minecraft:smooth_stone"),
-	DOUBLE_STEP_SPECIAL_SANDSTONE(43, 5, "minecraft:smooth_stone"),
-	DOUBLE_STEP_SPECIAL_OAK(43, 6, "minecraft:smooth_stone"),
+	DOUBLE_STEP_SPECIAL_STONE(43, 4, "minecraft:brick"),
+	DOUBLE_STEP_SPECIAL_SANDSTONE(43, 5, "minecraft:stone_bricks"),
+	DOUBLE_STEP_SPECIAL_OAK(43, 6, "minecraft:nether_bricks"),
 	DOUBLE_STEP_SPECIAL_COBBLESTONE(43, 7, "minecraft:smooth_stone"),
 	STEP_STONE(44, "minecraft:smooth_stone_slab"),
 	STEP_SANDSTONE(44, 1, "minecraft:sandstone_slab"),
 	STEP_OAK(44, 2, "minecraft:oak_slab"),
 	STEP_COBBLESTONE(44, 3, "minecraft:cobblestone_slab"),
+	STEP_BRICK(44, 4, "minecraft:bricks"),
+	STEP_STONE_BRICK(44, 5, "minecraft:stone_bricks"),
+	STEP_NETHER_BRICK(44, 6, "minecraft:nether_bricks"),
 	BRICK(45, "minecraft:bricks"),
 	TNT(46, "minecraft:tnt"),
 	BOOKSHELF(47, "minecraft:bookshelf"),
@@ -160,13 +166,13 @@ public enum BlockID {
 	MELON_STEM(105, "minecraft:melon_stem"),
 	VINES(106, "minecraft:vine"),
 	FENCE_GATE(107, "minecraft:oak_fence_gate"),
-	BRICK_STAIRS(108, "minecraft:brick_stairs"),
-	STONE_BRICK_STAIRS(109, "minecraft:stone_brick_stairs"),
+	BRICK_STAIRS(108, "minecraft:bricks"),
+	STONE_BRICK_STAIRS(109, "minecraft:stone_bricks"),
 	MYCELIUM(110, "minecraft:mycelium"),
 	LILY_PAD(111, "minecraft:lily_pad"),
 	NETHER_BRICK(112, "minecraft:nether_bricks"),
-	NETHER_BRICK_FENCE(113, "minecraft:nether_brick_fence"),
-	NETHER_BRICK_STAIRS(114, "minecraft:nether_brick_stairs"),
+	NETHER_BRICK_FENCE(113, "minecraft:nether_bricks"),
+	NETHER_BRICK_STAIRS(114, "minecraft:nether_bricks"),
 	NETHER_WART(115, "minecraft:nether_wart"),
 	ENCHANTMENT_TABLE(116, "minecraft:enchanting_table"),
 	BREWING_STAND(117, "minecraft:brewing_stand"),
@@ -175,6 +181,10 @@ public enum BlockID {
 	END_PORTAL_FRAME(120, "minecraft:end_portal_frame"),
 	END_STONE(121, "minecraft:end_stone"),
 	DRAGON_EGG(122, "minecraft:dragon_egg"),
+	REDSTONE_LAMP_INACTIVE(123, "minecraft:redstone_lamp"),
+	REDSTONE_LAMP_ACTIVE(124, "minecraft:redstone_lamp_on"),
+	// WOODEN_DOUBLE_STEP(125, "minecraft:double_wooden_slab"),
+	// WOODEN_STEP(126, "minecraft:wooden_slab"),
 	;
 	
 	private final int id;
@@ -235,16 +245,24 @@ public enum BlockID {
 		OAK_LOG.putProperty("axis", "y");
 		SPRUCE_LOG.putProperty("axis", "y");
 		BIRCH_LOG.putProperty("axis", "y");
+		JUNGLE_LOG.putProperty("axis", "y");
 		
 		DOUBLE_STEP_STONE.putProperty("type", "double");
 		DOUBLE_STEP_SANDSTONE.putProperty("type", "double");
 		DOUBLE_STEP_OAK.putProperty("type", "double");
 		DOUBLE_STEP_COBBLESTONE.putProperty("type", "double");
+		DOUBLE_STEP_SPECIAL_STONE.putProperty("type", "double");
+		DOUBLE_STEP_SPECIAL_SANDSTONE.putProperty("type", "double");
+		DOUBLE_STEP_SPECIAL_OAK.putProperty("type", "double");
+		DOUBLE_STEP_SPECIAL_COBBLESTONE.putProperty("type", "double");
 		
 		STEP_STONE.putProperty("type", "bottom");
 		STEP_SANDSTONE.putProperty("type", "bottom");
 		STEP_OAK.putProperty("type", "bottom");
 		STEP_COBBLESTONE.putProperty("type", "bottom");
+		STEP_STONE_BRICK.putProperty("type", "bottom");
+		STEP_NETHER_BRICK.putProperty("type", "bottom");
+		STEP_BRICK.putProperty("type", "bottom");
 		
 		FURNACE.putProperty("lit", "false");
 		BURNING_FURNACE.putProperty("lit", "true");
@@ -297,7 +315,7 @@ public enum BlockID {
 				bid == SUGAR_CANE_BLOCK || bid == SIGN_POST || bid == WALL_SIGN || bid == SOIL || bid == CROPS || 
 				bid == SNOW || bid == WEB || bid == REDSTONE_WIRE || bid == STONE_PLATE || bid == WOOD_PLATE ||
 				bid == FIRE || bid == FENCE || bid == WOODEN_DOOR || bid == IRON_DOOR_BLOCK || bid == CACTUS || 
-				bid == CAKE_BLOCK || bid == STONE_BUTTON || bid == BED || bid == TRAP_DOOR || bid == GLASS || bid == GLASS_PANE || bid == IRON_BARS ||
+				bid == CAKE_BLOCK || bid == STONE_BUTTON || bid == BED || bid == TRAP_DOOR || bid == GLASS || bid == GLASS_PANE || bid == IRON_BARS || bid == LILY_PAD ||
 				isStair(bid) || isRail(bid) || isLeaves(bid) || isFluid(bid) || isPistonVariant(bid)) ? false : true;
 	}
 	
@@ -317,7 +335,7 @@ public enum BlockID {
 	}
 	
 	protected static boolean isLog(BlockID bid) {
-		return bid == OAK_LOG || bid == SPRUCE_LOG || bid == BIRCH_LOG;
+		return bid == OAK_LOG || bid == SPRUCE_LOG || bid == BIRCH_LOG || bid == JUNGLE_LOG;
 	}
 	
 	protected static boolean isFluid(BlockID bid) {
@@ -329,7 +347,7 @@ public enum BlockID {
 	}
 	
 	protected static boolean isStair(BlockID bid) {
-		return bid == COBBLESTONE_STAIRS || bid == WOOD_STAIRS;
+		return bid == COBBLESTONE_STAIRS || bid == WOOD_STAIRS || bid == NETHER_BRICK_STAIRS || bid == BRICK_STAIRS || bid == STONE_BRICK_STAIRS;
 	}
 	
 	protected static boolean isCobbleContainerBlock(BlockID bid) {
@@ -506,7 +524,6 @@ public enum BlockID {
 				properties.put("facing", "south");
 			else if (metadata == 4)
 				properties.put("facing", "north");
-			
 		} else if (bid == BlockID.LEVER) {
 			
 			if (metadata < 8)
@@ -576,7 +593,22 @@ public enum BlockID {
 				properties.put("facing", "east");
 			
 		} else if (bid == BlockID.VINES) {
-			// i am smart
+			if (metadata == 1)
+				properties.put("south", "true");
+			if (metadata == 2)
+				properties.put("west", "true");
+			if (metadata == 4)
+				properties.put("north", "true");
+			if (metadata == 8)
+				properties.put("east", "true");
+			if (metadata == 16)
+				properties.put("up", "true");
+
+			if (!properties.containsKey("south")) properties.put("south", "false");
+			if (!properties.containsKey("west")) properties.put("west", "false");
+			if (!properties.containsKey("north")) properties.put("north", "false");
+			if (!properties.containsKey("east")) properties.put("east", "false");
+			if (!properties.containsKey("up")) properties.put("up", "false");
 		} else if (bid == BlockID.TRAP_DOOR) {
 			
 			if (metadata < 4)
