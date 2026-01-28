@@ -1,10 +1,10 @@
-## Fork Again to Suppooort later verisions (Bukkit r1.1 - idk)
+## Fork to Suppooort later verisions (CraftBukkit 1.1 - idk)
 
 This also makes it show newer blocks like stone bricks etc.
 
-Build with `gradlew :bukkit:release`
+I will make a branch or something soon to support some earlier CraftBukkit builds like beta 1.8 and release 1.0.
 
-## Forked to support Minecraft Beta 1.7.3's McRegion map format
+Build with `gradlew :bukkit:release`
 
 Original project can be found [here](https://github.com/BlueMap-Minecraft/BlueMap)
 
