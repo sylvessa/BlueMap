@@ -13,9 +13,13 @@ public enum BlockID {
 	DIRT(3, "minecraft:dirt"),
 	COBBLESTONE(4, "minecraft:cobblestone"),
 	WOOD(5, "minecraft:oak_planks"),
+	SPRUCE_WOOD(5, 1, "minecraft:spruce_planks"),
+	BIRCH_WOOD(5, 2, "minecraft:birch_planks"),
+	JUNGLE_WOOD(5, 3, "minecraft:jungle_planks"),
 	OAK_SAPLING(6, "minecraft:oak_sapling"),
 	SPRUCE_SAPLING(6, 1, "minecraft:spruce_sapling"),
 	BIRCH_SAPLING(6, 2, "minecraft:birch_sapling"),
+	JUNGLE_SAPLING(6, 3, "minecraft:jungle_sapling"),
 	BEDROCK(7, "minecraft:bedrock"),
 	WATER(8, "minecraft:flowing_water"),
 	STATIONARY_WATER(9, "minecraft:water"),
@@ -42,6 +46,8 @@ public enum BlockID {
 	LAPIS_BLOCK(22, "minecraft:lapis_block"),
 	DISPENSER(23, "minecraft:dispenser"),
 	SANDSTONE(24, "minecraft:sandstone"),
+	CHISELED_SANDSTONE(24, 1, "minecraft:chiseled_sandstone"),
+	SMOOTH_SANDSTONE(24, 2, "minecraft:smooth_sandstone"),
 	NOTE_BLOCK(25, "minecraft:note_block"),
 	BED(26, "minecraft:red_bed"),
 	GOLDEN_RAIL(27, "minecraft:powered_rail"),
@@ -185,6 +191,25 @@ public enum BlockID {
 	REDSTONE_LAMP_ACTIVE(124, "minecraft:redstone_lamp_on"),
 	// WOODEN_DOUBLE_STEP(125, "minecraft:double_wooden_slab"),
 	// WOODEN_STEP(126, "minecraft:wooden_slab"),
+	COCOA(127, "minecraft:cocoa"),
+	SANDSTONE_STAIRS(128, "minecraft:sandstone"),
+	EMERALD_ORE(129, "minecraft:emerald_ore"),
+	ENDER_CHEST(130, "minecraft:ender_chest"),
+	TRIPWIRE_HOOK(131, "minecraft:tripwire_hook"),
+	TRIPWIRE(132, "minecraft:tripwire"),
+	EMERALD_BLOCK(133, "minecraft:emerald_block"),
+	SPRUCE_STAIRS(134, "minecraft:spruce_stairs"),
+	BIRCH_STAIRS(135, "minecraft:birch_stairs"),
+	JUNGLE_STAIRS(136, "minecraft:jungle_stairs"),
+	COMMAND_BLOCK(137, "minecraft:command_block"),
+	BEACON(138, "minecraft:beacon"),
+	COBBLESTONE_WALL(139, "minecraft:cobblestone_wall"),
+	FLOWER_POT(140, "minecraft:flower_pot"),
+	CARROTS(141, "minecraft:carrots"),
+	POTATOES(142, "minecraft:potatoes"),
+	WOODEN_BUTTON(143, "minecraft:oak_button"),
+	MOB_HEADS(144, "minecraft:skull"),
+	ANVIL(145, "minecraft:anvil"),
 	;
 	
 	private final int id;
@@ -304,7 +329,7 @@ public enum BlockID {
 	}
 	
 	public static boolean isFlammable(BlockID bid) {
-		return (bid == WOOD || bid == FENCE || bid == WOOD_STAIRS || bid == BOOKSHELF || bid == TNT ||
+		return (bid == WOOD || bid == SPRUCE_WOOD || bid == BIRCH_WOOD || bid == JUNGLE_WOOD || bid == FENCE || bid == WOOD_STAIRS || bid == BOOKSHELF || bid == TNT ||
 				isLog(bid) || isLeaves(bid) || isWool(bid) || isTallgrass(bid));
 	}
 	
