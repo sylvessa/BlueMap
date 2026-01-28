@@ -6,7 +6,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("com.diffplug.spotless") version "6.1.2"
-	id ("com.github.johnrengelman.shadow") version "7.1.2"
+    id ("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 fun String.runCommand(): String = ProcessBuilder(split("\\s(?=(?:[^'\"`]*(['\"`])[^'\"`]*\\1)*[^'\"`]*$)".toRegex()))
@@ -118,7 +118,7 @@ publishing {
             artifactId = project.name
             version = project.version.toString()
 
-            from(components["java"])
+            artifact(tasks.named("shadowJar"))
         }
     }
 }
