@@ -240,7 +240,7 @@ public class HttpRequest {
 
     private void parseAddress() {
         String address = this.getAddress();
-        if (address.isEmpty()) address = "/";
+        if (address == null || address.isEmpty()) address = "/";
         String[] addressParts = address.split("\\?", 2);
         String path = addressParts[0];
         this.getParamString = addressParts.length > 1 ? addressParts[1] : "";
