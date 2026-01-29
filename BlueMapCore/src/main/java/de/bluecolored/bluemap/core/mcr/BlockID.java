@@ -296,6 +296,8 @@ public enum BlockID {
 		REDSTONE_TORCH_OFF_WALL.putProperty("lit", "false");
 		REDSTONE_TORCH_ON_GROUND.putProperty("lit", "true");
 		REDSTONE_TORCH_ON_WALL.putProperty("lit", "true");
+		REDSTONE_LAMP_INACTIVE.putProperty("lit", "false");
+		REDSTONE_LAMP_ACTIVE.putProperty("lit", "true");
 		CAKE_BLOCK.putProperty("lit", "false");
 		
 		DIODE_ON.putProperty("powered", "true");

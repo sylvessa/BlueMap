@@ -126,8 +126,8 @@ public class HttpRequest {
     private void parseHeaders() throws IOException {
         if (headerLines.isEmpty()) throw new IOException("Invalid HTTP Request: No Header");
 
-        // String rawRequestLine = headerLines.get(0);
-        // Logger.global.logDebug("Raw HTTP request line from " + source + ": '" + rawRequestLine + "'");
+        //String rawRequestLine = headerLines.get(0);
+        //Logger.global.logDebug("Raw HTTP request line from " + source + ": '" + rawRequestLine + "'");
 
         Matcher m = REQUEST_PATTERN.matcher(headerLines.get(0));
         if (!m.find()) throw new IOException("Invalid HTTP Request: Request-Pattern not matching");
