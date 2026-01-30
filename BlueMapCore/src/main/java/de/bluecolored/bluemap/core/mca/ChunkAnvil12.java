@@ -4,6 +4,7 @@ import de.bluecolored.bluemap.core.mcr.BlockID;
 import de.bluecolored.bluemap.core.world.BlockState;
 import de.bluecolored.bluemap.core.world.LightData;
 import de.bluecolored.bluemap.core.logger.Logger;
+import de.bluecolored.bluemap.core.world.*;
 import net.querz.nbt.*;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class ChunkAnvil12 extends MCAChunk {
 		ListTag<CompoundTag> sectionsTag = (ListTag<CompoundTag>) level.getListTag("Sections");
 		if (sectionsTag != null) {
 			for (CompoundTag sec : sectionsTag) {
-				Section s = new Section(sec);
+				Section s = new Section(sec, world);
 				if (s.y >= 0 && s.y < 16)
 					sections[s.y] = s;
 			}
@@ -102,8 +103,10 @@ public class ChunkAnvil12 extends MCAChunk {
 		private byte[] add;
 		private byte[] blockLight;
 		private byte[] skyLight;
+        private MCAWorld world;
 
-		public Section(CompoundTag tag) {
+		public Section(CompoundTag tag, MCAWorld world) {
+			this.world = world;
 			this.y = tag.getByte("Y");
 			this.blocks = tag.getByteArray("Blocks");
 			this.data = tag.getByteArray("Data");
@@ -120,6 +123,7 @@ public class ChunkAnvil12 extends MCAChunk {
 		}
 
 		public BlockState getBlockState(int x, int y, int z, Section[] sections, int sectionIndex) {
+
 			x &= 0xF;
 			z &= 0xF;
 			int localY = y & 0xF;
@@ -133,9 +137,10 @@ public class ChunkAnvil12 extends MCAChunk {
 			if (bid == null) bid = BlockID.query(id);
 			if (bid == null) return BlockState.MISSING;
 
-			Map<String, String> props = BlockID.metadataToProperties(bid, meta);
+			Map<String, String> metadataToProperties = BlockID.metadataToProperties(bid, meta);
 
 			// snowy grass check
+			// todo: add more of these properties from ChunkMCRegion.java
 			if (id == 2) {
 				int aboveId = 0;
 				int aboveMeta = 0;
@@ -145,10 +150,149 @@ public class ChunkAnvil12 extends MCAChunk {
 					Section next = sections[sectionIndex + 1];
 					aboveId = next.blocks[z * 16 + x] & 0xFF;
 				}
-				props.put("snowy", (aboveId == 78 || aboveId == 80) ? "true" : "false");
+				metadataToProperties.put("snowy", (aboveId == 78 || aboveId == 80) ? "true" : "false");
+			} else if (id == 85) {
+				metadataToProperties.put("west",  getBlockIdNearby(x, localY, z, -1, 0, 0) == 85 ? "true" : "false");
+				metadataToProperties.put("east",  getBlockIdNearby(x, localY, z, 1, 0, 0) == 85 ? "true" : "false");
+				metadataToProperties.put("north", getBlockIdNearby(x, localY, z, 0, 0, -1) == 85 ? "true" : "false");
+				metadataToProperties.put("south", getBlockIdNearby(x, localY, z, 0, 0, 1) == 85 ? "true" : "false");
+			} else if (id == 90) {
+				// portal
+				int neighborXMinus = getBlockIdNearby(x, localY, z, -1, 0, 0);
+				int neighborXPlus  = getBlockIdNearby(x, localY, z, 1, 0, 0);
+
+				if (neighborXMinus == 90 || neighborXPlus == 90)
+					metadataToProperties.put("axis", "x");
+				else
+					metadataToProperties.put("axis", "z");
+			} else if (id == 102 || id == 101) {
+				// glass pane & iron bar
+				// todo: dont connect fences to panes and bars and etc
+				int west  = getBlockIdNearby(x, localY, z, -1, 0, 0);
+				int east  = getBlockIdNearby(x, localY, z, 1, 0, 0);
+				int north = getBlockIdNearby(x, localY, z, 0, 0, -1);
+				int south = getBlockIdNearby(x, localY, z, 0, 0, 1);
+
+				if (west > 0)
+					metadataToProperties.put("west", "true");
+				if (east > 0)
+					metadataToProperties.put("east", "true");
+				if (north > 0)
+					metadataToProperties.put("north", "true");
+				if (south > 0)
+					metadataToProperties.put("south", "true");
+			} else if (id == 54) {
+				// chest
+
+				int west  = getBlockIdNearby(x, localY, z, -1, 0, 0);
+				int east  = getBlockIdNearby(x, localY, z, 1, 0, 0);
+				int north = getBlockIdNearby(x, localY, z, 0, 0, -1);
+				int south = getBlockIdNearby(x, localY, z, 0, 0, 1);
+
+				if (west == 54) {
+					int westNorth = getBlockIdNearby(x, localY, z, -1, 0, 1);
+					int northThis = getBlockIdNearby(x, localY, z, 0, 0, 1);
+					if (BlockID.isOpaque(westNorth) || BlockID.isOpaque(northThis)) {
+						metadataToProperties.put("facing", "north");
+						metadataToProperties.put("type", "right");
+					} else {
+						metadataToProperties.put("facing", "south");
+						metadataToProperties.put("type", "left");
+					}
+				} else if (east == 54) {
+					int eastNorth = getBlockIdNearby(x, localY, z, 1, 0, 1);
+					int northThis = getBlockIdNearby(x, localY, z, 0, 0, 1);
+					if (BlockID.isOpaque(eastNorth) || BlockID.isOpaque(northThis)) {
+						metadataToProperties.put("facing", "north");
+						metadataToProperties.put("type", "left");
+					} else {
+						metadataToProperties.put("facing", "south");
+						metadataToProperties.put("type", "right");
+					}
+				} else if (north == 54) {
+					int northEast = getBlockIdNearby(x, localY, z, 1, 0, -1);
+					int eastThis  = getBlockIdNearby(x, localY, z, 1, 0, 0);
+					if (BlockID.isOpaque(northEast) || BlockID.isOpaque(eastThis)) {
+						metadataToProperties.put("facing", "west");
+						metadataToProperties.put("type", "left");
+					} else {
+						metadataToProperties.put("facing", "east");
+						metadataToProperties.put("type", "right");
+					}
+				} else if (south == 54) {
+					int southEast = getBlockIdNearby(x, localY, z, 1, 0, 1);
+					int eastThis  = getBlockIdNearby(x, localY, z, 1, 0, 0);
+					if (BlockID.isOpaque(southEast) || BlockID.isOpaque(eastThis)) {
+						metadataToProperties.put("facing", "west");
+						metadataToProperties.put("type", "right");
+					} else {
+						metadataToProperties.put("facing", "east");
+						metadataToProperties.put("type", "left");
+					}
+				} else {
+					// singular chest
+					metadataToProperties.put("type", "single");
+
+					if (BlockID.isOpaque(north))
+						metadataToProperties.put("facing", "south");
+					else if (BlockID.isOpaque(west))
+						metadataToProperties.put("facing", "east");
+					else if (BlockID.isOpaque(south))
+						metadataToProperties.put("facing", "north");
+					else if (BlockID.isOpaque(east))
+						metadataToProperties.put("facing", "west");
+					else
+						metadataToProperties.put("facing", "south");
+				}
+			} else if (id == 64 || id == 71) { 
+				// doors
+				metadataToProperties.put("hinge", "left");
+				metadataToProperties.put("powered", "false");
+
+				if (meta < 8)
+					metadataToProperties.put("half", "lower");
+				else
+					metadataToProperties.put("half", "upper");
+
+				meta %= 8;
+
+				if (meta < 4)
+					metadataToProperties.put("open", "false");
+				else
+					metadataToProperties.put("open", "true");
+
+				meta %= 4;
+
+				if (meta == 0)
+					metadataToProperties.put("facing", "east");
+				else if (meta == 1)
+					metadataToProperties.put("facing", "south");
+				else if (meta == 2)
+					metadataToProperties.put("facing", "west");
+				else if (meta == 3)
+					metadataToProperties.put("facing", "north");
+			} else if (id == 51) { 
+				// fire
+				int below = y > 0 ? getBlockIdNearby(x, localY, z, 0, -1, 0) : 0;
+
+				if (BlockID.isOpaque(below) || below == 30 || below == 52 || below == 85) {
+					metadataToProperties.put("west", "false");
+					metadataToProperties.put("east", "false");
+					metadataToProperties.put("north", "false");
+					metadataToProperties.put("south", "false");
+					metadataToProperties.put("up", "false");
+				} else {
+					int above = (localY + 1 < 16) ? getBlockIdNearby(x, localY, z, 0, 1, 0) : 0;
+					if (BlockID.isFlammable(above)) metadataToProperties.put("up", "true");
+
+					if (BlockID.isFlammable(getBlockIdNearby(x, localY, z, -1, 0, 0))) metadataToProperties.put("west", "true");
+					if (BlockID.isFlammable(getBlockIdNearby(x, localY, z, 1, 0, 0)))  metadataToProperties.put("east", "true");
+					if (BlockID.isFlammable(getBlockIdNearby(x, localY, z, 0, 0, -1))) metadataToProperties.put("north", "true");
+					if (BlockID.isFlammable(getBlockIdNearby(x, localY, z, 0, 0, 1)))  metadataToProperties.put("south", "true");
+				}
 			}
 
-			BlockState state = BlockState.of(bid.getModernId(), props);
+			BlockState state = BlockState.of(bid.getModernId(), metadataToProperties);
 
 			return new BlockState(state.getFormatted(), state.getProperties()) {
 				@Override
@@ -196,6 +340,19 @@ public class ChunkAnvil12 extends MCAChunk {
 			try {
 				return getNibble(skyLight, (y & 0xF) * 256 + (z & 0xF) * 16 + (x & 0xF));
 			} catch (Exception e) { return 15; }
+		}
+
+		// silly litttle helper cause im lazy
+		private int getBlockIdNearby(int x, int y, int z, int dx, int dy, int dz) {
+			int nx = (x + dx) & 0xF;
+			int ny = (y & 0xF) + dy;
+			int nz = (z + dz) & 0xF;
+
+			if (ny < 0 || ny > 15) return 0;
+			if (nx < 0 || nx > 15) return 0;
+			if (nz < 0 || nz > 15) return 0;
+
+			return blocks[ny * 256 + nz * 16 + nx] & 0xFF;
 		}
 	}
 }
