@@ -1,12 +1,10 @@
-## Fork to Suppooort later verisions (CraftBukkit 1.1 - idk)
+## Bluemap b1.7 fork to support later versions
 
 This also makes it show newer blocks like stone bricks etc.
 
-I will make a branch or something soon to support some earlier CraftBukkit builds like beta 1.8 and release 1.0.
-
 Build with `gradlew :bukkit:release` and is able to be built with atleast Java 11
 
-If using 1.2 or above, add `worldtype: "mca"` to your world configs.
+If using 1.2 or above, add `worldtype: "mca"` to your world configs. This will be automated in the future
 
 Original project can be found [here](https://github.com/BlueMap-Minecraft/BlueMap)
 
