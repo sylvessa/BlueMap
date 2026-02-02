@@ -10,6 +10,23 @@ If using 1.2 or above, add `worldtype: "mca"` to your world configs.
 
 Original project can be found [here](https://github.com/BlueMap-Minecraft/BlueMap)
 
+## Supported & Tested CraftBukkit Versions:
+
+- **b1.7** - Tested CB#945 <sub>requires bukkit-legacy</sub>
+- **b1.7.2** - Tested CB#967 <sub>requires bukkit-legacy</sub>
+- **b1.7.3** - Tested CB#1060 and CB#1092 <sub>requires bukkit-legacy</sub>
+- **b1.8.1** - Tested CB#1464 and CB#1337 <sub>requires bukkit-legacy</sub>
+- **1.0** - Tested CB#1712 <sub>requires bukkit-legacy</sub>
+- **1.1** - Tested R6 and R5
+- **1.2.5** - Tested R5.0 and R5.1-SNAPSHOT
+- **1.3.2** - Tested R3.0
+
+You should use [Uberbukkit](https://github.com/Moresteck/uberbukkit) if you want this to work with versions before beta 1.7
+
+If a version isnt listed here, I haven't updated this to support that version.
+
+I will probably only go up to 1.11 or 1.12.
+
 ## To get the Beta look:
 
 Make sure you generate the default BlueMap configuration first and accept the Minecraft EULA.
