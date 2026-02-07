@@ -7,6 +7,7 @@ import de.bluecolored.bluemap.core.logger.Logger;
 import de.bluecolored.bluemap.core.world.*;
 import net.querz.nbt.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ public class ChunkAnvil12 extends MCAChunk {
 	private long inhabitedTime;
 	private Section[] sections;
 	private byte[] biomes;
+	private Map<Long, CompoundTag> tileEntities;
 
 	public ChunkAnvil12(MCAWorld world, CompoundTag chunkTag) {
 		super(world, chunkTag);
@@ -39,6 +41,27 @@ public class ChunkAnvil12 extends MCAChunk {
 		this.biomes = level.getByteArray("Biomes");
 		if (biomes == null || biomes.length < 256)
 			biomes = new byte[256];
+
+		this.tileEntities = new HashMap<>();
+
+		// todo: does this even work?
+		// i wrote this on a whim and never tested it
+		ListTag<CompoundTag> tiles = (ListTag<CompoundTag>) level.getListTag("TileEntities");
+		if (tiles != null) {
+			for (CompoundTag te : tiles) {
+				int x = te.getInt("x") & 15;
+				int y = te.getInt("y");
+				int z = te.getInt("z") & 15;
+
+				long key = (((long) y) << 8) | (z << 4) | x;
+				tileEntities.put(key, te);
+			}
+		}
+	}
+
+	public CompoundTag getTileEntity(int x, int y, int z) {
+		long key = (((long) y) << 8) | ((z & 15) << 4) | (x & 15);
+		return tileEntities.get(key);
 	}
 
 	@Override
@@ -59,7 +82,7 @@ public class ChunkAnvil12 extends MCAChunk {
 		Section s = sections[sy];
 		if (s == null) return BlockState.AIR;
 
-		return s.getBlockState(x, y, z, sections, sy);
+		return s.getBlockState(x, y, z, sections, sy, this);
 	}
 
 	@Override
@@ -103,7 +126,7 @@ public class ChunkAnvil12 extends MCAChunk {
 		private byte[] add;
 		private byte[] blockLight;
 		private byte[] skyLight;
-        private MCAWorld world;
+		private MCAWorld world;
 
 		public Section(CompoundTag tag, MCAWorld world) {
 			this.world = world;
@@ -122,7 +145,7 @@ public class ChunkAnvil12 extends MCAChunk {
 			return upper ? (arr[i] >> 4) & 0xF : arr[i] & 0xF;
 		}
 
-		public BlockState getBlockState(int x, int y, int z, Section[] sections, int sectionIndex) {
+		public BlockState getBlockState(int x, int y, int z, Section[] sections, int sectionIndex, ChunkAnvil12 chunk) {
 
 			x &= 0xF;
 			z &= 0xF;
@@ -168,8 +191,8 @@ public class ChunkAnvil12 extends MCAChunk {
 			} else if (id == 102 || id == 101) {
 				// glass pane & iron bar
 				// todo: dont connect fences to panes and bars and etc
-				int west  = getBlockIdNearby(x, localY, z, -1, 0, 0);
-				int east  = getBlockIdNearby(x, localY, z, 1, 0, 0);
+				int west = getBlockIdNearby(x, localY, z, -1, 0, 0);
+				int east = getBlockIdNearby(x, localY, z, 1, 0, 0);
 				int north = getBlockIdNearby(x, localY, z, 0, 0, -1);
 				int south = getBlockIdNearby(x, localY, z, 0, 0, 1);
 
@@ -313,18 +336,18 @@ public class ChunkAnvil12 extends MCAChunk {
 
 			if (!BlockID.isOpaque(BlockID.query(id, 0))) {
 				skyLightVal = Math.max(skyLightVal,
-						Math.max(getSkyLightSafe(x - 1, y, z),
-								Math.max(getSkyLightSafe(x + 1, y, z),
-										Math.max(getSkyLightSafe(x, y, z - 1),
-												Math.max(getSkyLightSafe(x, y, z + 1),
-														getSkyLightSafe(x, y + 1, z))))));
+					Math.max(getSkyLightSafe(x - 1, y, z),
+						Math.max(getSkyLightSafe(x + 1, y, z),
+							Math.max(getSkyLightSafe(x, y, z - 1),
+								Math.max(getSkyLightSafe(x, y, z + 1),
+									getSkyLightSafe(x, y + 1, z))))));
 
 				blockLightVal = Math.max(blockLightVal,
-						Math.max(getBlockLightSafe(x - 1, y, z),
-								Math.max(getBlockLightSafe(x + 1, y, z),
-										Math.max(getBlockLightSafe(x, y, z - 1),
-												Math.max(getBlockLightSafe(x, y, z + 1),
-														getBlockLightSafe(x, y + 1, z))))));
+					Math.max(getBlockLightSafe(x - 1, y, z),
+						Math.max(getBlockLightSafe(x + 1, y, z),
+							Math.max(getBlockLightSafe(x, y, z - 1),
+								Math.max(getBlockLightSafe(x, y, z + 1),
+									getBlockLightSafe(x, y + 1, z))))));
 			}
 
 			return target.set(skyLightVal, blockLightVal);
@@ -342,7 +365,6 @@ public class ChunkAnvil12 extends MCAChunk {
 			} catch (Exception e) { return 15; }
 		}
 
-		// silly litttle helper cause im lazy
 		private int getBlockIdNearby(int x, int y, int z, int dx, int dy, int dz) {
 			int nx = (x + dx) & 0xF;
 			int ny = (y & 0xF) + dy;
