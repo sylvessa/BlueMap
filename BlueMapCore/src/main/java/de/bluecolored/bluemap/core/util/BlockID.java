@@ -1,5 +1,7 @@
 package de.bluecolored.bluemap.core.util;
 
+import de.bluecolored.bluemap.core.logger.Logger;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
@@ -189,8 +191,19 @@ public enum BlockID {
 	DRAGON_EGG(122, "minecraft:dragon_egg"),
 	REDSTONE_LAMP_INACTIVE(123, "minecraft:redstone_lamp"),
 	REDSTONE_LAMP_ACTIVE(124, "minecraft:redstone_lamp_on"),
-	// WOODEN_DOUBLE_STEP(125, "minecraft:double_wooden_slab"),
-	// WOODEN_STEP(126, "minecraft:wooden_slab"),
+	WOODEN_DOUBLE_STEP(125, "minecraft:double_wooden_slab"),
+	WOODEN_STEP(126, "minecraft:oak_slab"),
+	SPRUCE_WOODEN_STEP(126, 1, "minecraft:spruce_slab"),
+	BIRCH_WOODEN_STEP(126, 2, "minecraft:birch_slab"),
+	JUNGLE_WOODEN_STEP(126, 3, "minecraft:jungle_slab"),
+	ACACIA_WOODEN_STEP(126, 4, "minecraft:acacia_slab"),
+	DARK_OAK_WOODEN_STEP(126, 5, "minecraft:dark_oak_slab"),
+	WOODEN_STEP_TOP(126, 8, "minecraft:oak_slab"),
+	SPRUCE_WOODEN_STEP_TOP(126, 9, "minecraft:spruce_slab"),
+	BIRCH_WOODEN_STEP_TOP(126, 10, "minecraft:birch_slab"),
+	JUNGLE_WOODEN_STEP_TOP(126, 11, "minecraft:jungle_slab"),
+	ACACIA_WOODEN_STEP_TOP(126, 12, "minecraft:acacia_slab"),
+	DARK_OAK_WOODEN_STEP_TOP(126, 13, "minecraft:dark_oak_slab"),
 	COCOA(127, "minecraft:cocoa"),
 	SANDSTONE_STAIRS(128, "minecraft:sandstone"),
 	EMERALD_ORE(129, "minecraft:emerald_ore"),
@@ -314,7 +327,23 @@ public enum BlockID {
 		
 		TRAP_DOOR.putProperty("half", "bottom");
 		PISTON_EXTENSION.putProperty("short", "false");
-		
+
+		WOODEN_STEP.putProperty("type", "bottom");
+		SPRUCE_WOODEN_STEP.putProperty("type", "bottom");
+		BIRCH_WOODEN_STEP.putProperty("type", "bottom");
+		JUNGLE_WOODEN_STEP.putProperty("type", "bottom");
+		ACACIA_WOODEN_STEP.putProperty("type", "bottom");
+		DARK_OAK_WOODEN_STEP.putProperty("type", "bottom");
+
+		WOODEN_STEP_TOP.putProperty("type", "top");
+		SPRUCE_WOODEN_STEP_TOP.putProperty("type", "top");
+		BIRCH_WOODEN_STEP_TOP.putProperty("type", "top");
+		JUNGLE_WOODEN_STEP_TOP.putProperty("type", "top");
+		ACACIA_WOODEN_STEP_TOP.putProperty("type", "top");
+		DARK_OAK_WOODEN_STEP_TOP.putProperty("type", "top");
+
+
+
 		// TODO temporary lazy hack
 		REDSTONE_WIRE.putProperty("east", "side");
 		REDSTONE_WIRE.putProperty("west", "side");
@@ -406,8 +435,13 @@ public enum BlockID {
 	}
 	
 	public static Map<String, String> metadataToProperties(BlockID bid, int metadata) {
+		// property nelper without neighboring ids
 		HashMap<String, String> properties = new HashMap<String, String>();
 		properties.putAll(bid.getBasicProperties());
+
+//		if (bid.id == 126) {
+//			Logger.global.logInfo("BLOCK ID 126: " + metadata);
+//		}
 		
 		if (bid == BlockID.BED) {
 			

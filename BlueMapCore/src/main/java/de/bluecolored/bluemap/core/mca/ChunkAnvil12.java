@@ -193,6 +193,22 @@ public class ChunkAnvil12 extends MCAChunk {
 
 			int id = blocks[i] & 0xFF;
 
+			if (id == 44 || id == 53 || id == 67 || id == 126) {
+				blockLightVal = Math.max(blockLightVal,
+						Math.max(getBlockLightSafe(x - 1, y, z),
+								Math.max(getBlockLightSafe(x + 1, y, z),
+										Math.max(getBlockLightSafe(x, y, z - 1),
+												Math.max(getBlockLightSafe(x, y, z + 1),
+														getBlockLightSafe(x, y + 1, z))))));
+
+				skyLightVal = Math.max(skyLightVal,
+						Math.max(getSkyLightSafe(x - 1, y, z),
+								Math.max(getSkyLightSafe(x + 1, y, z),
+										Math.max(getSkyLightSafe(x, y, z - 1),
+												Math.max(getSkyLightSafe(x, y, z + 1),
+														getSkyLightSafe(x, y + 1, z))))));
+			}
+
 			if (!BlockID.isOpaque(BlockID.query(id, 0))) {
 				skyLightVal = Math.max(skyLightVal,
 					Math.max(getSkyLightSafe(x - 1, y, z),
