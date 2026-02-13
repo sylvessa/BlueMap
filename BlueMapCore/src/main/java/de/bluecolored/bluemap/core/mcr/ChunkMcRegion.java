@@ -30,8 +30,10 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import de.bluecolored.bluemap.core.BlueMap;
+import de.bluecolored.bluemap.core.util.BlockPropertyHelper;
 import de.bluecolored.bluemap.core.world.BlockState;
 import de.bluecolored.bluemap.core.world.LightData;
+import de.bluecolored.bluemap.core.util.BlockID;
 import net.querz.nbt.CompoundTag;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -140,297 +142,36 @@ public class ChunkMcRegion extends MCRChunk {
         }
 
         public BlockState getBlockState(int x, int y, int z) {
-            if (blocks.length == 0) return BlockState.AIR;
-            
-            int ox = x, oz = z;
+			if (blocks.length == 0) return BlockState.AIR;
 
-            x &= 0xF; z &= 0xF; // Math.floorMod(pos.getX(), 16)
-            
-            int block_id = this.blocks[x << 11 | z << 7 | y] & 255;
-            int metadata = this.metadata.getData(x, y, z);
-            
-            if (block_id == AIR_ID)
-            	return BlockState.AIR;
-            
-            BlockID bid = BlockID.query(block_id, metadata);
-            
-            if (bid == null)
-            	bid = BlockID.query(block_id);
-            
-            if (bid == null)
-            	return BlockState.MISSING;
-            
-            Map<String, String> metadataToProperties = BlockID.metadataToProperties(bid, metadata);
-            
-            // ugly patches
-            if (block_id == 2) {
-            	// if grass block, define whether it's snowy or not
-                // (doesn't seem to affect performance much)
-            	
-            	int block_id_above = 0;
-            	
-            	if (y + 1 < 128) // avoid out of bounds
-            		block_id_above = this.blocks[x << 11 | z << 7 | (y+1)] & 255;
-            	
-            	if (block_id_above == 78 || block_id_above == 80)
-            		metadataToProperties.put("snowy", "true");
-            	else
-            		metadataToProperties.put("snowy", "false");
-            	
-            } else if (block_id == 90) {
-            	// handle portals
-            	
-            	int block_id_xmin = this.world.getChunkAtBlock(ox-1, y, oz).fromBlocksArray(ox-1, y, oz);
-            	int block_id_xplus = this.world.getChunkAtBlock(ox+1, y, oz).fromBlocksArray(ox+1, y, oz);
-            	
-            	if (block_id_xmin == 90 || block_id_xplus == 90)
-            		metadataToProperties.put("axis", "x");
-            	else
-            		metadataToProperties.put("axis", "z");
-            	
-            } else if (block_id == 85) {
-            	// handle fences
-            	
-            	int block_id_xmin = this.world.getChunkAtBlock(ox-1, y, oz).fromBlocksArray(ox-1, y, oz);
-            	int block_id_xplus = this.world.getChunkAtBlock(ox+1, y, oz).fromBlocksArray(ox+1, y, oz);
-            	int block_id_zmin = this.world.getChunkAtBlock(ox, y, oz-1).fromBlocksArray(ox, y, oz-1);
-            	int block_id_zplus = this.world.getChunkAtBlock(ox, y, oz+1).fromBlocksArray(ox, y, oz+1);
-            	
-            	if (block_id_xmin == 85)
-            		metadataToProperties.put("west", "true");
-            	
-            	if (block_id_xplus == 85)
-            		metadataToProperties.put("east", "true");
-            	
-            	if (block_id_zmin == 85)
-            		metadataToProperties.put("north", "true");
-            	
-            	if (block_id_zplus == 85)
-            		metadataToProperties.put("south", "true");
-            } else if (block_id == 102 || block_id == 101) {
-				// glass panes
-				// testinmg
+			int ox = x, oz = z;
+			x &= 0xF; z &= 0xF;
 
-				int block_id_xmin = this.world.getChunkAtBlock(ox-1, y, oz).fromBlocksArray(ox-1, y, oz);
-				int block_id_xplus = this.world.getChunkAtBlock(ox+1, y, oz).fromBlocksArray(ox+1, y, oz);
-				int block_id_zmin = this.world.getChunkAtBlock(ox, y, oz-1).fromBlocksArray(ox, y, oz-1);
-				int block_id_zplus = this.world.getChunkAtBlock(ox, y, oz+1).fromBlocksArray(ox, y, oz+1);
+			int blockId = this.blocks[x << 11 | z << 7 | y] & 255;
+			int metadata = this.metadata.getData(x, y, z);
 
-				if (BlockID.isOpaque(block_id_xmin) || block_id_xmin == 102 || block_id_xmin == 101)
-					metadataToProperties.put("west", "true");
+			if (blockId == 0) return BlockState.AIR;
 
-				if (BlockID.isOpaque(block_id_xplus) || block_id_xplus == 102 || block_id_xplus == 101)
-					metadataToProperties.put("east", "true");
+			BlockID bid = BlockID.query(blockId, metadata);
+			if (bid == null) bid = BlockID.query(blockId);
+			if (bid == null) return BlockState.MISSING;
 
-				if (BlockID.isOpaque(block_id_zmin) || block_id_zmin == 102 || block_id_zmin == 101)
-					metadataToProperties.put("north", "true");
+			BlockState baseState = BlockState.of(bid.getModernId(), BlockID.metadataToProperties(bid, metadata));
 
-				if (BlockID.isOpaque(block_id_zplus) || block_id_zplus == 102 || block_id_zplus == 101)
-					metadataToProperties.put("south", "true");
-            } else if (block_id == 54) {
-            	// handle chests <pain>
-            	
-            	int block_id_xmin = this.world.getChunkAtBlock(ox-1, y, oz).fromBlocksArray(ox-1, y, oz);
-            	int block_id_xplus = this.world.getChunkAtBlock(ox+1, y, oz).fromBlocksArray(ox+1, y, oz);
-            	int block_id_zmin = this.world.getChunkAtBlock(ox, y, oz-1).fromBlocksArray(ox, y, oz-1);
-            	int block_id_zplus = this.world.getChunkAtBlock(ox, y, oz+1).fromBlocksArray(ox, y, oz+1);
-            	
-            	if (block_id_xmin == 54) {
-            		
-            		int block_id_xmin_zplus = this.world.getChunkAtBlock(ox-1, y, oz+1).fromBlocksArray(ox-1, y, oz+1);
-            		int block_id_x_zplus = this.world.getChunkAtBlock(ox, y, oz+1).fromBlocksArray(ox, y, oz+1);
-            		
-            		if (BlockID.isOpaque(block_id_xmin_zplus) || BlockID.isOpaque(block_id_x_zplus)) {
-            			
-            			metadataToProperties.put("facing", "north");
-            			metadataToProperties.put("type", "right");
-            			
-            			
-            		} else {
-            			
-            			metadataToProperties.put("facing", "south");
-            			metadataToProperties.put("type", "left");
-            			
-            		}
-            	} else if (block_id_xplus == 54) {
-            		
-            		int block_id_xplus_zplus = this.world.getChunkAtBlock(ox+1, y, oz+1).fromBlocksArray(ox+1, y, oz+1);
-            		int block_id_x_zplus = this.world.getChunkAtBlock(ox, y, oz+1).fromBlocksArray(ox, y, oz+1);
-            		
-            		if (BlockID.isOpaque(block_id_xplus_zplus) || BlockID.isOpaque(block_id_x_zplus)) {
-            			
-            			metadataToProperties.put("facing", "north");
-            			metadataToProperties.put("type", "left");
-            			
-            		} else {
-            			
-            			metadataToProperties.put("facing", "south");
-            			metadataToProperties.put("type", "right");
-            			
-            		}
-            	} else if (block_id_zmin == 54) {
-            		
-            		int block_id_zmin_xplus = this.world.getChunkAtBlock(ox+1, y, oz-1).fromBlocksArray(ox+1, y, oz-1);
-            		int block_id_z_xplus = this.world.getChunkAtBlock(ox+1, y, oz).fromBlocksArray(ox+1, y, oz);
-            		
-            		if (BlockID.isOpaque(block_id_zmin_xplus) || BlockID.isOpaque(block_id_z_xplus)) {
-            			
-            			metadataToProperties.put("facing", "west");
-            			metadataToProperties.put("type", "left");
-            			
-            		} else {
-            			
-            			metadataToProperties.put("facing", "east");
-            			metadataToProperties.put("type", "right");
-            			
-            		}
-            	} else if (block_id_zplus == 54) {
-            		
-            		int block_id_zplus_xplus = this.world.getChunkAtBlock(ox+1, y, oz+1).fromBlocksArray(ox+1, y, oz+1);
-            		int block_id_z_xplus = this.world.getChunkAtBlock(ox+1, y, oz).fromBlocksArray(ox+1, y, oz);
-            		
-            		
-            		if (BlockID.isOpaque(block_id_zplus_xplus) || BlockID.isOpaque(block_id_z_xplus)) {
-            			
-            			metadataToProperties.put("facing", "west");
-            			metadataToProperties.put("type", "right");
-            			
-            		} else {
-            			
-            			metadataToProperties.put("facing", "east");
-            			metadataToProperties.put("type", "left");
-            			
-            		}
-            	} else {
-            		// singular chest
-            		
-            		metadataToProperties.put("type", "single");
-            		
-            		if (BlockID.isOpaque(block_id_zmin))
-            			metadataToProperties.put("facing", "south");
-            		else if (BlockID.isOpaque(block_id_xmin))
-            			metadataToProperties.put("facing", "east");
-            		else if (BlockID.isOpaque(block_id_zplus))
-            			metadataToProperties.put("facing", "north");
-            		else if (BlockID.isOpaque(block_id_xplus))
-            			metadataToProperties.put("facing", "west");
-            		else
-            			metadataToProperties.put("facing", "south");
-            	}
-            } else if (block_id == 64 || block_id == 71) {
-            	// handle doors
-            	
-            	// the hinge is always on the left. right-hinge doors are just of different facing
-            	metadataToProperties.put("hinge", "left");
-            	metadataToProperties.put("powered", "false");
-            	
-            	if (metadata < 8)
-            		metadataToProperties.put("half", "lower");
-            	else
-            		metadataToProperties.put("half", "upper");
-            	
-            	
-            	metadata %= 8;
-            	
-            	if (metadata < 4)
-            		metadataToProperties.put("open", "false");
-            	else
-            		metadataToProperties.put("open", "true");
-            	
-            	metadata %= 4;
-            	
-            	if (metadata == 0)
-    				metadataToProperties.put("facing", "east");
-    			else if (metadata == 1)
-    				metadataToProperties.put("facing", "south");
-    			else if (metadata == 2)
-    				metadataToProperties.put("facing", "west");
-    			else if (metadata == 3)
-    				metadataToProperties.put("facing", "north");
-            	
-            	
-            } else if (block_id == 51) {
-            	// handle fire
-            	
-            	int block_id_below = 0;
-            	
-            	if (y - 1 >= 0) // avoid out of bounds
-            		block_id_below = this.blocks[x << 11 | z << 7 | (y-1)] & 255;
-            	
-            	if (BlockID.isOpaque(block_id_below) || block_id_below == 30 || block_id_below == 52 ||
-            			block_id_below == 85) { // + web, spawner, fence
-            		
-            		metadataToProperties.put("west", "false");
-            		metadataToProperties.put("east", "false");
-            		metadataToProperties.put("north", "false");
-            		metadataToProperties.put("south", "false");
-            		metadataToProperties.put("up", "false");
-            		
-            	} else {
-            		
-            		if (y + 1 < 128) { // avoid out of bounds
-            			
-            			int block_id_above = this.blocks[x << 11 | z << 7 | (y+1)] & 255;
-            			
-            			if (BlockID.isFlammable(block_id_above))
-                    		metadataToProperties.put("up", "true");
-            			
-            		}
-            		
-            		int block_id_xmin = this.world.getChunkAtBlock(ox-1, y, oz).fromBlocksArray(ox-1, y, oz);
-                	int block_id_xplus = this.world.getChunkAtBlock(ox+1, y, oz).fromBlocksArray(ox+1, y, oz);
-                	int block_id_zmin = this.world.getChunkAtBlock(ox, y, oz-1).fromBlocksArray(ox, y, oz-1);
-                	int block_id_zplus = this.world.getChunkAtBlock(ox, y, oz+1).fromBlocksArray(ox, y, oz+1);
-                	
-                	if (BlockID.isFlammable(block_id_xmin))
-                		metadataToProperties.put("west", "true");
-                	
-                	if (BlockID.isFlammable(block_id_zmin))
-                		metadataToProperties.put("north", "true");
-                	
-                	if (BlockID.isFlammable(block_id_xplus))
-                		metadataToProperties.put("east", "true");
-                	
-                	if (BlockID.isFlammable(block_id_zplus))
-                		metadataToProperties.put("south", "true");
-                	
-            	}
-            	
-            } else if (block_id == 55) {
-            	// handle redstone wire TODO
-            	
-            	
-            } else if (block_id == 63) {
-            	// sign support is non-existent at this point
-            	
-//            	for (int i = 0; i < tileentities.size(); i++) {
-//            		
-//            		Tag<?> tag = tileentities.get(i);
-//            		
-//            		if (!(tag instanceof CompoundTag))
-//            			continue;
-//            		
-//            		CompoundTag tileentity = (CompoundTag) tag;
-//            		
-//            		int tx = tileentity.getInt("x");
-//            		int ty = tileentity.getInt("y");
-//            		int tz = tileentity.getInt("z");
-//            		
-//            		if (tx != ox || ty != y || tz != oz)
-//            			continue;
-//            	
-//            		if (!"Sign".equals(tileentity.getString("id")))
-//        				break;
-//            		
-//            		String line1 = ((StringTag)tileentity.get("Text1")).getValue();
-//            		String line2 = ((StringTag)tileentity.get("Text2")).getValue();
-//            		String line3 = ((StringTag)tileentity.get("Text3")).getValue();
-//            		String line4 = ((StringTag)tileentity.get("Text4")).getValue();
-//            	}
-            }
-            
-            return BlockState.of(bid.getModernId(), metadataToProperties);
-        }
+			int[] horizontal = {
+				this.world.getChunkAtBlock(ox-1, y, oz).fromBlocksArray(ox-1, y, oz),
+				this.world.getChunkAtBlock(ox+1, y, oz).fromBlocksArray(ox+1, y, oz),
+				this.world.getChunkAtBlock(ox, y, oz-1).fromBlocksArray(ox, y, oz-1),
+				this.world.getChunkAtBlock(ox, y, oz+1).fromBlocksArray(ox, y, oz+1)
+			};
+
+			int above = (y+1 < 128) ? this.blocks[x << 11 | z << 7 | (y+1)] & 255 : 0;
+			int below = (y-1 >= 0) ? this.blocks[x << 11 | z << 7 | (y-1)] & 255 : 0;
+			int[] vertical = {above, below};
+
+			return BlockPropertyHelper.applySpecialProperties(blockId, metadata, ox, y, oz,
+				new int[][] { horizontal, vertical }, baseState);
+		}
 
         public LightData getLightData(int x, int y, int z, LightData target) {
             if (blockLight.data.length == 0 && skyLight.data.length == 0) return target.set(0, 0);

@@ -1,4 +1,4 @@
-package de.bluecolored.bluemap.core.mcr;
+package de.bluecolored.bluemap.core.util;
 
 import java.util.HashMap;
 import java.util.Map;
