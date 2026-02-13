@@ -4,8 +4,6 @@ Build with `gradlew build`
 
 Requires atleast Java 11.
 
-If using 1.2 or above, add `worldtype: "mca"` to your world configs. This will be automated in the future
-
 Original project can be found [here](https://github.com/BlueMap-Minecraft/BlueMap)
 
 ## Supported & Tested CraftBukkit Versions:

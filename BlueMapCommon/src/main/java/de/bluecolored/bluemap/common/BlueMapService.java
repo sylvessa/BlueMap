@@ -256,10 +256,35 @@ public class BlueMapService implements Closeable {
         if (world == null) {
             try {
                 Logger.global.logInfo("Loading world '" + worldId + "' (" + worldFolder.toAbsolutePath().normalize() + ")...");
-                if (mapConfig.getWorldType() == WorldType.MCREGION)
-                	world = new MCRWorld(worldFolder, mapConfig.getWorldSkyLight(), mapConfig.isIgnoreMissingLightData());
-                else
-                	world = new MCAWorld(worldFolder, mapConfig.getWorldSkyLight(), mapConfig.isIgnoreMissingLightData());
+                Path regionFolder = worldFolder.resolve("region");
+                WorldType worldType;
+
+                if (Files.isDirectory(regionFolder)) {
+                    boolean hasMca;
+                    boolean hasMcr;
+
+                    try (Stream<Path> files = Files.list(regionFolder)) {
+                        hasMca = files.anyMatch(f -> f.toString().endsWith(".mca"));
+                    }
+
+                    try (Stream<Path> files = Files.list(regionFolder)) {
+                        hasMcr = files.anyMatch(f -> f.toString().endsWith(".mcr"));
+                    }
+
+                    if (hasMca) worldType = WorldType.ANVIL;
+                    else if (hasMcr) worldType = WorldType.MCREGION;
+                    else worldType = mapConfig.getWorldType();
+                } else {
+                    worldType = mapConfig.getWorldType();
+                }
+
+                if (worldType == WorldType.MCREGION) {
+                    world = new MCRWorld(worldFolder, mapConfig.getWorldSkyLight(), mapConfig.isIgnoreMissingLightData());
+                }
+                else {
+                    world = new MCAWorld(worldFolder, mapConfig.getWorldSkyLight(), mapConfig.isIgnoreMissingLightData());
+                }
+
                 
                 worlds.put(worldId, world);
             } catch (IOException ex) {
