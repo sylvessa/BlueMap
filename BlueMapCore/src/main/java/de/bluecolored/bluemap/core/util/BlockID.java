@@ -11,17 +11,29 @@ public enum BlockID {
 	// block names copied from Bukkit
 	AIR(0, "minecraft:air"),
 	STONE(1, "minecraft:stone"),
+	GRANITE(1, 1, "minecraft:granite"),
+	POLISHED_GRANITE(1, 2, "minecraft:polished_granite"),
+	DIORITE(1, 3, "minecraft:diorite"),
+	POLISHED_DIORITE(1, 4, "minecraft:polished_diorite"),
+	ANDESITE(1, 5, "minecraft:andesite"),
+	POLISHED_ANDESITE(1, 66, "minecraft:polished_andesite"),
 	GRASS(2, "minecraft:grass_block"),
 	DIRT(3, "minecraft:dirt"),
+	COARSE_DIRT(3, 1, "minecraft:coarse_dirt"),
+	PODZOL(3, 2, "minecraft:podzol"),
 	COBBLESTONE(4, "minecraft:cobblestone"),
 	WOOD(5, "minecraft:oak_planks"),
 	SPRUCE_WOOD(5, 1, "minecraft:spruce_planks"),
 	BIRCH_WOOD(5, 2, "minecraft:birch_planks"),
 	JUNGLE_WOOD(5, 3, "minecraft:jungle_planks"),
+	ACACIA_WOOD(5, 4, "minecraft:acacia_planks"),
+	DARK_OAK_WOOD(5, 5, "minecraft:dark_oak_planks"),
 	OAK_SAPLING(6, "minecraft:oak_sapling"),
 	SPRUCE_SAPLING(6, 1, "minecraft:spruce_sapling"),
 	BIRCH_SAPLING(6, 2, "minecraft:birch_sapling"),
 	JUNGLE_SAPLING(6, 3, "minecraft:jungle_sapling"),
+	ACACIA_SAPLING(6, 4, "minecraft:acacia_sapling"),
+	DARK_OAK_SAPLING(6, 5, "minecraft:dark_oak_sapling"),
 	BEDROCK(7, "minecraft:bedrock"),
 	WATER(8, "minecraft:flowing_water"),
 	STATIONARY_WATER(9, "minecraft:water"),
@@ -85,6 +97,14 @@ public enum BlockID {
 	PISTON_MOVING(36, "minecraft:moving_piston"),
 	YELLOW_FLOWER(37, "minecraft:dandelion"),
 	RED_ROSE(38, "minecraft:poppy"),
+	BLUE_ORCHID(38, 1, "minecraft:blue_orchid"),
+	ALLIUM(38, 2, "minecraft:allium"),
+	AZURE_BLUET(38, 3, "minecraft:azure_bluet"),
+	RED_TULIP(38, 4, "minecraft:red_tulip"),
+	ORANGE_TULIP(38, 5, "minecraft:orange_tulip"),
+	WHITE_TULIP(38, 6, "minecraft:white_tulip"),
+	PINK_TULIP(38, 7, "minecraft:pink_tulip"),
+	OXEYE_DAISY(38, 8, "minecraft:oxeye_daisy"),
 	BROWN_MUSHROOM(39, "minecraft:brown_mushroom"),
 	RED_MUSHROOM(40, "minecraft:red_mushroom"),
 	GOLD_BLOCK(41, "minecraft:gold_block"),
@@ -123,9 +143,9 @@ public enum BlockID {
 	FIRE(51, "minecraft:fire"),
 	MOB_SPAWNER(52, "minecraft:spawner"),
 	WOOD_STAIRS(53, "minecraft:oak_stairs"),
-	WOOD_STAIRS_INVISIBLE(53, 5, "minecraft:barrier"),
+	//WOOD_STAIRS_INVISIBLE(53, 5, "minecraft:barrier"),
 	CHEST(54, "minecraft:chest"),
-	REDSTONE_WIRE(55, "minecraft:redstone_wire"), // TODO later
+	REDSTONE_WIRE(55, "minecraft:redstone_wire"),
 	DIAMOND_ORE(56, "minecraft:diamond_ore"),
 	DIAMOND_BLOCK(57, "minecraft:diamond_block"),
 	WORKBENCH(58, "minecraft:crafting_table"),
@@ -138,7 +158,7 @@ public enum BlockID {
 	LADDER(65, "minecraft:ladder"),
 	RAILS(66, "minecraft:rail"),
 	COBBLESTONE_STAIRS(67, "minecraft:cobblestone_stairs"),
-	COBBLESTONE_STAIRS_INVISIBLE(67, 5, "minecraft:barrier"),
+	//COBBLESTONE_STAIRS_INVISIBLE(67, 5, "minecraft:barrier"),
 	WALL_SIGN(68, "minecraft:oak_wall_sign"),
 	LEVER(69, "minecraft:lever"),
 	STONE_PLATE(70, "minecraft:stone_pressure_plate"),
@@ -251,6 +271,62 @@ public enum BlockID {
 	WOODEN_BUTTON(143, "minecraft:oak_button"),
 	MOB_HEADS(144, "minecraft:skull"),
 	ANVIL(145, "minecraft:anvil"),
+
+	// TODO: 1.5
+	TRAPPED_CHEST(146, "minecraft:trapped_chest"),
+	LIGHT_WEIGHTED_PRESSURE_PLATE(147, "minecraft:light_weighted_pressure_plate"),
+	HEAVY_WEIGHTED_PRESSURE_PLATE(148, "minecraft:heavy_weighted_pressure_plate"),
+	COMPARATOR_INACTIVE(149, "minecraft:comparator"),
+	COMPARATOR_ACTIVE(150, "minecraft:comparator"),
+	DAYLIGHT_SENSOR(151, "minecraft:comparator"),
+	REDSTONE_BLOCK(152, "minecraft:redstone_block"),
+	QUARTZ_ORE(153, "minecraft:nether_quartz_ore"),
+	HOPPER(154, "minecraft:hopper"),
+	QUARTZ_BLOCK(155, "minecraft:quartz_block"),
+	QUARTZ_BLOCK_CHISELED(155, 1, "minecraft:chiseled_quartz_block"),
+	QUARTZ_BLOCK_PILLAR(155, 2, "minecraft:quartz_pillar"),
+	QUARTZ_STAIRS(156, "minecraft:quartz_stairs"),
+	ACTIVATOR_RAIL(157, "minecraft:activator_rail"),
+	DROPPER(158, "minecraft:dropper"),
+
+	// TODO: 1.6
+	WHITE_HARDENED_CLAY(159, "minecraft:white_terracotta"),
+	ORANGE_HARDENED_CLAY(159, 1, "minecraft:orange_terracotta"),
+	MAGENTA_HARDENED_CLAY(159, 2, "minecraft:magenta_terracotta"),
+	LIGHTBLUE_HARDENED_CLAY(159, 3, "minecraft:light_blue_terracotta"),
+	YELLOW_HARDENED_CLAY(159, 4, "minecraft:yellow_terracotta"),
+	LIME_HARDENED_CLAY(159, 5, "minecraft:lime_terracotta"),
+	PINK_HARDENED_CLAY(159, 6, "minecraft:pink_terracotta"),
+	GRAY_HARDENED_CLAY(159, 7, "minecraft:gray_terracotta"),
+	LIGHTGRAY_HARDENED_CLAY(159, 8, "minecraft:light_gray_terracotta"),
+	CYAN_HARDENED_CLAY(159, 9, "minecraft:cyan_terracotta"),
+	PURPLE_HARDENED_CLAY(159, 10, "minecraft:purple_terracotta"),
+	BLUE_HARDENED_CLAY(159, 11, "minecraft:blue_terracotta"),
+	BROWN_HARDENED_CLAY(159, 12, "minecraft:brown_terracotta"),
+	GREEN_HARDENED_CLAY(159, 13, "minecraft:green_terracotta"),
+	RED_HARDENED_CLAY(159, 14, "minecraft:red_terracotta"),
+	BLACK_HARDENED_CLAY(159, 15, "minecraft:black_terracotta"),
+	HAY_BALE(170, "minecraft:hay_block"),
+	CARPET(171, "minecraft:white_carpet"),
+	ORANGE_CARPET(171, 1, "minecraft:orange_carpet"),
+	MAGENTA_CARPET(171, 2, "minecraft:magenta_carpet"),
+	LIGHTBLUE_CARPET(171, 3, "minecraft:light_blue_carpet"),
+	YELLOW_CARPET(171, 4, "minecraft:yellow_carpet"),
+	LIME_CARPET(171, 5, "minecraft:lime_carpet"),
+	PINK_CARPET(171, 6, "minecraft:pink_carpet"),
+	GRAY_CARPET(171, 7, "minecraft:gray_carpet"),
+	LIGHTGRAY_CARPET(171, 8, "minecraft:light_gray_carpet"),
+	CYAN_CARPET(171, 9, "minecraft:cyan_carpet"),
+	PURPLE_CARPET(171, 10, "minecraft:purple_carpet"),
+	BLUE_CARPET(171, 11, "minecraft:blue_carpet"),
+	BROWN_CARPET(171, 12, "minecraft:brown_carpet"),
+	GREEN_CARPET(171, 13, "minecraft:green_carpet"),
+	RED_CARPET(171, 14, "minecraft:red_carpet"),
+	BLACK_CARPET(171, 15, "minecraft:black_carpet"),
+	HARDENED_CLAY(172, "minecraft:terracotta"),
+	COAL_BLOCK(173, "minecraft:coal_block"),
+
+	// TODO: 1.7
 	;
 	
 	public final int id;
@@ -431,11 +507,15 @@ public enum BlockID {
 	}
 	
 	public static boolean isOpaque(BlockID bid) {
+		// todo: i should REALLY make this a variable when registering block ids
+
 		return (bid == AIR || bid == YELLOW_FLOWER || bid == RED_ROSE || bid == TORCH_WALL || bid == TORCH_GROUND ||
 				bid == REDSTONE_TORCH_ON_WALL || bid == REDSTONE_TORCH_ON_GROUND || bid == REDSTONE_TORCH_OFF_WALL ||
 				bid == REDSTONE_TORCH_OFF_GROUND || bid == LEVER || bid == LADDER || bid == VINES || bid == MOB_SPAWNER || bid == PORTAL ||
 				bid == SUGAR_CANE_BLOCK || bid == SIGN_POST || bid == WALL_SIGN || bid == SOIL || bid == CROPS ||
 				bid == CARROTS || bid == POTATOES ||
+				bid == BLUE_ORCHID || bid == ALLIUM || bid == AZURE_BLUET || bid == RED_TULIP || bid == ORANGE_TULIP || bid == WHITE_TULIP ||
+				bid == PINK_TULIP || bid == OXEYE_DAISY ||
 				bid == SNOW || bid == WEB || bid == REDSTONE_WIRE || bid == STONE_PLATE || bid == WOOD_PLATE ||
 				bid == FIRE || bid == FENCE || bid == WOODEN_DOOR || bid == IRON_DOOR_BLOCK || bid == CACTUS ||
 				bid == CAKE_BLOCK || bid == STONE_BUTTON || bid == WOODEN_BUTTON || bid == BED || bid == TRAP_DOOR || bid == GLASS || bid == GLASS_PANE || bid == IRON_BARS || bid == LILY_PAD ||

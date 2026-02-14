@@ -16,13 +16,20 @@ Original project can be found [here](https://github.com/BlueMap-Minecraft/BlueMa
 - **1.1** - Tested R6 and R5
 - **1.2.5** - Tested R5.0 and R5.1-SNAPSHOT
 - **1.3.2** - Tested R3.0
-- **1.4.7** - Tested R1.1-SNAPSHOT and R1.0 <sub>minimal support, needs improvement</sub>
+- **1.4.7** - Tested R1.1-SNAPSHOT and R1.0 <sub>mostly supported, needs improvement</sub>
+- **1.5.2** - Tested R1.0 <sub>minimal support, needs improvement</sub>
+- **1.6.4** - Tested R2.0 <sub>minimal support, needs improvement</sub>
+- **1.7.10** - Tested R2.0 <sub>minimal support, needs improvement</sub>
 
 You should use [Uberbukkit](https://github.com/Moresteck/uberbukkit) if you want this to work with versions before beta 1.7
 
-If a version isnt listed here, I haven't updated this to support that version.
+If a version isn't listed here, I haven't updated this to support that version.
 
 I will only go up to 1.11 or 1.12 for supported versions. Right now main focus is 1.3-1.5 support.
+
+Looking for a BlueMap plugin for 1.13 - 1.15? Use [BlueMap v3.21](https://github.com/BlueMap-Minecraft/BlueMap/releases/tag/v3.21)
+
+For 1.16 - 1.19, use [BlueMap v5.3](https://github.com/BlueMap-Minecraft/BlueMap/releases/tag/v5.3)
 
 ## To get the Beta look:
 

@@ -38,7 +38,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
 
     private static final Pattern VERSION_REGEX = Pattern.compile("(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?(?:-(?:pre|rc)\\d+)?");
 
-    public static final MinecraftVersion LATEST_SUPPORTED = new MinecraftVersion(1, 20);
+    public static final MinecraftVersion LATEST_SUPPORTED = new MinecraftVersion(1, 13);
     public static final MinecraftVersion EARLIEST_SUPPORTED = new MinecraftVersion(MinecraftEra.BETA, 1, 7);
 
     private final MinecraftEra era;
