@@ -23,7 +23,7 @@ Original project can be found [here](https://github.com/BlueMap-Minecraft/BlueMa
 
 You should use [Uberbukkit](https://github.com/Moresteck/uberbukkit) if you want this to work with versions before beta 1.7
 
-If a version isn't listed here, I haven't updated this to support that version.
+If a version isn't listed here, I haven't tested it, or it just doesn't work in that version.
 
 I will only go up to 1.11 or 1.12 for supported versions. Right now main focus is 1.3-1.5 support.
 
