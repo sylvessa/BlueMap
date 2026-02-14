@@ -25,16 +25,17 @@
 package de.bluecolored.bluemap.core.mcr;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 import de.bluecolored.bluemap.core.BlueMap;
 import de.bluecolored.bluemap.core.util.BlockPropertyHelper;
 import de.bluecolored.bluemap.core.world.BlockState;
+import de.bluecolored.bluemap.core.world.Chunk;
 import de.bluecolored.bluemap.core.world.LightData;
 import de.bluecolored.bluemap.core.util.BlockID;
 import net.querz.nbt.CompoundTag;
+import net.querz.nbt.ListTag;
 import org.apache.commons.lang3.math.NumberUtils;
 
 @SuppressWarnings("FieldMayBeFinal")
@@ -44,6 +45,7 @@ public class ChunkMcRegion extends MCRChunk {
     private boolean isGenerated;
     private boolean hasLight;
     private Section section;
+    private final Map<Long, CompoundTag> tileEntities;
 
     @SuppressWarnings("unchecked")
     public ChunkMcRegion(MCRWorld world, CompoundTag chunkTag) {
@@ -53,8 +55,21 @@ public class ChunkMcRegion extends MCRChunk {
 
         this.isGenerated = levelData.getBoolean("TerrainPopulated");
         this.hasLight = isGenerated;
+        this.tileEntities = new HashMap<>();
 
-        section = new Section(levelData, world);
+        ListTag<CompoundTag> tiles = (ListTag<CompoundTag>) levelData.getListTag("TileEntities");
+        if (tiles != null) {
+            for (CompoundTag te : tiles) {
+                int x = te.getInt("x") & 15;
+                int y = te.getInt("y");
+                int z = te.getInt("z") & 15;
+
+                long key = (((long) y) << 8) | (z << 4) | x;
+                tileEntities.put(key, te);
+            }
+        }
+
+        section = new Section(levelData, world, this);
     }
 
     @Override
@@ -72,6 +87,11 @@ public class ChunkMcRegion extends MCRChunk {
     	x &= 0xF; z &= 0xF;
     	
     	return this.section.blocks[x << 11 | z << 7 | y] & 255;
+    }
+
+    public CompoundTag getTileEntity(int x, int y, int z) {
+        long key = (((long) y) << 8) | ((z & 15) << 4) | (x & 15);
+        return tileEntities.get(key);
     }
 
     @Override
@@ -120,16 +140,18 @@ public class ChunkMcRegion extends MCRChunk {
         private NibbleArray skyLight;
         private NibbleArray metadata;
         protected byte[] blocks;
-        //protected ListTag tileentities;
+        protected ListTag tileentities;
         private MCRWorld world;
+        private ChunkMcRegion chunk;
 
-        public Section(CompoundTag sectionData, MCRWorld world) {
+        public Section(CompoundTag sectionData, MCRWorld world, ChunkMcRegion chunk) {
         	this.world = world;
+            this.chunk = chunk;
             this.blockLight = new NibbleArray(sectionData.getByteArray("BlockLight"));
             this.skyLight = new NibbleArray(sectionData.getByteArray("SkyLight"));
             this.metadata = new NibbleArray(sectionData.getByteArray("Data"));
             this.blocks = sectionData.getByteArray("Blocks");
-            //this.tileentities = sectionData.getListTag("TileEntities");
+            this.tileentities = sectionData.getListTag("TileEntities");
 
             if (blocks.length < 256 && blocks.length > 0) blocks = Arrays.copyOf(blocks, 256);
             if (metadata.data.length < 256 && metadata.data.length > 0) metadata.data = Arrays.copyOf(metadata.data, 256);
@@ -158,19 +180,42 @@ public class ChunkMcRegion extends MCRChunk {
 
 			BlockState baseState = BlockState.of(bid.getModernId(), BlockID.metadataToProperties(bid, metadata));
 
-			int[] horizontal = {
-				this.world.getChunkAtBlock(ox-1, y, oz).fromBlocksArray(ox-1, y, oz),
-				this.world.getChunkAtBlock(ox+1, y, oz).fromBlocksArray(ox+1, y, oz),
-				this.world.getChunkAtBlock(ox, y, oz-1).fromBlocksArray(ox, y, oz-1),
-				this.world.getChunkAtBlock(ox, y, oz+1).fromBlocksArray(ox, y, oz+1)
-			};
+            int[][][][] neighbors = new int[3][3][3][2];
 
-			int above = (y+1 < 128) ? this.blocks[x << 11 | z << 7 | (y+1)] & 255 : 0;
-			int below = (y-1 >= 0) ? this.blocks[x << 11 | z << 7 | (y-1)] & 255 : 0;
-			int[] vertical = {above, below};
+            for (int dy = -1; dy <= 1; dy++) {
+                int ny = y + dy;
 
-			return BlockPropertyHelper.applySpecialProperties(blockId, metadata, ox, y, oz,
-				new int[][] { horizontal, vertical }, baseState);
+                for (int dz = -1; dz <= 1; dz++) {
+                    int nz = oz + dz;
+                    for (int dx = -1; dx <= 1; dx++) {
+                        int nx = ox + dx;
+
+                        int nId = 0;
+                        int nMeta = 0;
+
+                        ChunkMcRegion neighborChunk;
+                        try {
+                            Chunk neighbor = this.world.getChunkAtBlock(nx, ny, nz);
+                            if (neighbor instanceof ChunkMcRegion) {
+                                neighborChunk = (ChunkMcRegion) neighbor;
+                                nId = neighborChunk.fromBlocksArray(nx, ny, nz);
+                                nMeta = neighborChunk.section.metadata.getData(nx, ny, nz);
+                            } else {
+                                nId = 0;
+                                nMeta = 0;
+                            }
+                        } catch (Exception e) {
+                            nId = 0;
+                            nMeta = 0;
+                        }
+
+                        neighbors[dy + 1][dz + 1][dx + 1][0] = nId;
+                        neighbors[dy + 1][dz + 1][dx + 1][1] = nMeta;
+                    }
+                }
+            }
+
+            return BlockPropertyHelper.applySpecialProperties(blockId, metadata, ox, y, oz, neighbors, baseState, chunk.getTileEntity(ox, y, oz));
 		}
 
         public LightData getLightData(int x, int y, int z, LightData target) {
@@ -183,8 +228,7 @@ public class ChunkMcRegion extends MCRChunk {
 
             int block_id = this.blocks[x << 11 | z << 7 | y] & 255;
 
-			// if slab or stairs, use max light value from neighboring blocks (except facing down)
-			if (block_id == 44 || block_id == 53 || block_id == 67) {
+			if (block_id == 44 || block_id == 53 || block_id == 67 || (BlockID.isOpaque(BlockID.query(block_id)) && block_id > 0)) {
 				blocklight = NumberUtils.max(
 						blocklight,
 						this.getBlockLight(x-1, y, z),

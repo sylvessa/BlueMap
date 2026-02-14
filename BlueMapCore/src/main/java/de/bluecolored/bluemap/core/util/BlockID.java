@@ -96,14 +96,23 @@ public enum BlockID {
 	DOUBLE_STEP_SPECIAL_STONE(43, 4, "minecraft:brick"),
 	DOUBLE_STEP_SPECIAL_SANDSTONE(43, 5, "minecraft:stone_bricks"),
 	DOUBLE_STEP_SPECIAL_OAK(43, 6, "minecraft:nether_bricks"),
-	DOUBLE_STEP_SPECIAL_COBBLESTONE(43, 7, "minecraft:smooth_stone"),
+	DOUBLE_STEP_SPECIAL_COBBLESTONE(43, 7, "minecraft:quartz_block"),
 	STEP_STONE(44, "minecraft:smooth_stone_slab"),
 	STEP_SANDSTONE(44, 1, "minecraft:sandstone_slab"),
 	STEP_OAK(44, 2, "minecraft:oak_slab"),
 	STEP_COBBLESTONE(44, 3, "minecraft:cobblestone_slab"),
-	STEP_BRICK(44, 4, "minecraft:bricks"),
-	STEP_STONE_BRICK(44, 5, "minecraft:stone_bricks"),
-	STEP_NETHER_BRICK(44, 6, "minecraft:nether_bricks"),
+	STEP_BRICK(44, 4, "minecraft:brick_slab"),
+	STEP_STONE_BRICK(44, 5, "minecraft:stone_brick_slab"),
+	STEP_NETHER_BRICK(44, 6, "minecraft:nether_brick_slab"),
+	STEP_QUARTZ(44, 7, "minecraft:quartz_slab"),
+	STEP_STONE_TOP(44, 8, "minecraft:smooth_stone_slab"),
+	STEP_SANDSTONE_TOP(44, 9, "minecraft:sandstone_slab"),
+	STEP_OAK_TOP(44, 10, "minecraft:oak_slab"),
+	STEP_COBBLESTONE_TOP(44, 11, "minecraft:cobblestone_slab"),
+	STEP_BRICK_TOP(44, 12, "minecraft:brick_slab"),
+	STEP_STONE_BRICK_TOP(44, 13, "minecraft:stone_brick_slab"),
+	STEP_NETHER_BRICK_TOP(44, 14, "minecraft:nether_brick_slab"),
+	STEP_QUARTZ_TOP(44, 15, "minecraft:quartz_slab"),
 	BRICK(45, "minecraft:bricks"),
 	TNT(46, "minecraft:tnt"),
 	BOOKSHELF(47, "minecraft:bookshelf"),
@@ -191,7 +200,12 @@ public enum BlockID {
 	DRAGON_EGG(122, "minecraft:dragon_egg"),
 	REDSTONE_LAMP_INACTIVE(123, "minecraft:redstone_lamp"),
 	REDSTONE_LAMP_ACTIVE(124, "minecraft:redstone_lamp_on"),
-	WOODEN_DOUBLE_STEP(125, "minecraft:double_wooden_slab"),
+	WOODEN_DOUBLE_STEP(125, "minecraft:oak_planks"),
+	SPRUCE_DOUBLE_STEP(125, 1, "minecraft:spruce_planks"),
+	BIRCH_DOUBLE_STEP(125, 2, "minecraft:birch_planks"),
+	JUNGLE_DOUBLE_STEP(125, 3, "minecraft:jungle_planks"),
+	ACACIA_DOUBLE_STEP(125, 4, "minecraft:acacia_planks"),
+	DARK_OAK_DOUBLE_STEP(125, 5, "minecraft:dark_oak_planks"),
 	WOODEN_STEP(126, "minecraft:oak_slab"),
 	SPRUCE_WOODEN_STEP(126, 1, "minecraft:spruce_slab"),
 	BIRCH_WOODEN_STEP(126, 2, "minecraft:birch_slab"),
@@ -205,7 +219,7 @@ public enum BlockID {
 	ACACIA_WOODEN_STEP_TOP(126, 12, "minecraft:acacia_slab"),
 	DARK_OAK_WOODEN_STEP_TOP(126, 13, "minecraft:dark_oak_slab"),
 	COCOA(127, "minecraft:cocoa"),
-	SANDSTONE_STAIRS(128, "minecraft:sandstone"),
+	SANDSTONE_STAIRS(128, "minecraft:sandstone_stairs"),
 	EMERALD_ORE(129, "minecraft:emerald_ore"),
 	ENDER_CHEST(130, "minecraft:ender_chest"),
 	TRIPWIRE_HOOK(131, "minecraft:tripwire_hook"),
@@ -217,7 +231,21 @@ public enum BlockID {
 	COMMAND_BLOCK(137, "minecraft:command_block"),
 	BEACON(138, "minecraft:beacon"),
 	COBBLESTONE_WALL(139, "minecraft:cobblestone_wall"),
+	MOSSY_COBBLESTONE_WALL(139, 1, "minecraft:mossy_cobblestone_wall"),
 	FLOWER_POT(140, "minecraft:flower_pot"),
+	POTTED_POPPY(140, 1,"minecraft:potted_poppy"),
+	POTTED_DANDELION(140, 2,"minecraft:potted_dandelion"),
+	POTTED_OAK_SAPLING(140, 3,"minecraft:potted_oak_sapling"),
+	POTTED_SPRUCE_SAPLING(140, 4,"minecraft:potted_spruce_sapling"),
+	POTTED_BIRCH_SAPLING(140, 5,"minecraft:potted_birch_sapling"),
+	POTTED_JUNGLE_SAPLING(140, 6,"minecraft:potted_jungle_sapling"),
+	POTTED_RED_MUSHROOM(140, 7,"minecraft:potted_red_mushroom"),
+	POTTED_BROWN_MUSHROOM(140, 8,"minecraft:potted_brown_mushroom"),
+	POTTED_CACTUS(140, 9,"minecraft:potted_cactus"),
+	POTTED_DEAD_BUSH(140, 10,"minecraft:potted_dead_bush"),
+	POTTED_FERN(140, 11,"minecraft:potted_fern"),
+	POTTED_ACACIA_SAPLING(140, 12,"minecraft:potted_acacia_sapling"),
+	POTTED_DARK_OAK_SAPLING(140, 13,"minecraft:potted_dark_oak_sapling"),
 	CARROTS(141, "minecraft:carrots"),
 	POTATOES(142, "minecraft:potatoes"),
 	WOODEN_BUTTON(143, "minecraft:oak_button"),
@@ -230,17 +258,16 @@ public enum BlockID {
 	private final String val;
 	private final HashMap<String, String> properties = new HashMap<>();
 	private final static BlockID[] VALUES = BlockID.values();
-	
+
 	private BlockID(int i, int data, String value) {
 		this.id = i;
 		this.data = data;
 		this.val = value;
 	}
-	
+
 	private BlockID(int i, String value) {
 		this(i, 0, value);
 	}
-	
 	private void putProperty(String key, String val) {
 		this.properties.put(key, val);
 	}
@@ -277,14 +304,29 @@ public enum BlockID {
 	public Map<String, String> getBasicProperties() {
 		return this.properties;
 	}
-	
+
+	public static BlockID fromModernId(String modernId) {
+		for (BlockID bid : VALUES) {
+			if (bid.val.equals(modernId)) return bid;
+		}
+		return null;
+	}
+
 	static {
 		// absolutes
 		OAK_LOG.putProperty("axis", "y");
 		SPRUCE_LOG.putProperty("axis", "y");
 		BIRCH_LOG.putProperty("axis", "y");
 		JUNGLE_LOG.putProperty("axis", "y");
-		
+
+		MOB_HEADS.putProperty("powered", "false");
+		MOB_HEADS.putProperty("rotation", "0");
+		MOB_HEADS.putProperty("facing", "north");
+
+		COBBLESTONE_WALL.putProperty("up", "true");
+		MOSSY_COBBLESTONE_WALL.putProperty("up", "true");
+
+
 		DOUBLE_STEP_STONE.putProperty("type", "double");
 		DOUBLE_STEP_SANDSTONE.putProperty("type", "double");
 		DOUBLE_STEP_OAK.putProperty("type", "double");
@@ -293,7 +335,7 @@ public enum BlockID {
 		DOUBLE_STEP_SPECIAL_SANDSTONE.putProperty("type", "double");
 		DOUBLE_STEP_SPECIAL_OAK.putProperty("type", "double");
 		DOUBLE_STEP_SPECIAL_COBBLESTONE.putProperty("type", "double");
-		
+
 		STEP_STONE.putProperty("type", "bottom");
 		STEP_SANDSTONE.putProperty("type", "bottom");
 		STEP_OAK.putProperty("type", "bottom");
@@ -301,6 +343,16 @@ public enum BlockID {
 		STEP_STONE_BRICK.putProperty("type", "bottom");
 		STEP_NETHER_BRICK.putProperty("type", "bottom");
 		STEP_BRICK.putProperty("type", "bottom");
+		STEP_QUARTZ.putProperty("type", "bottom");
+
+		STEP_STONE_TOP.putProperty("type", "top");
+		STEP_SANDSTONE_TOP.putProperty("type", "top");
+		STEP_OAK_TOP.putProperty("type", "top");
+		STEP_COBBLESTONE_TOP.putProperty("type", "top");
+		STEP_STONE_BRICK_TOP.putProperty("type", "top");
+		STEP_NETHER_BRICK_TOP.putProperty("type", "top");
+		STEP_BRICK_TOP.putProperty("type", "top");
+		STEP_QUARTZ_TOP.putProperty("type", "top");
 		
 		FURNACE.putProperty("lit", "false");
 		BURNING_FURNACE.putProperty("lit", "true");
@@ -317,13 +369,14 @@ public enum BlockID {
 		DIODE_OFF.putProperty("powered", "false");
 		DIODE_ON.putProperty("locked", "false");
 		DIODE_OFF.putProperty("locked", "false");
-		
+
 		STONE_BUTTON.putProperty("face", "wall");
+		WOODEN_BUTTON.putProperty("face", "wall");
 		
-		COBBLESTONE_STAIRS.putProperty("shape", "straight");
-		COBBLESTONE_STAIRS.putProperty("half", "bottom");
-		WOOD_STAIRS.putProperty("shape", "straight");
-		WOOD_STAIRS.putProperty("half", "bottom");
+//		COBBLESTONE_STAIRS.putProperty("shape", "straight");
+//		COBBLESTONE_STAIRS.putProperty("half", "bottom");
+//		WOOD_STAIRS.putProperty("shape", "straight");
+//		WOOD_STAIRS.putProperty("half", "bottom");
 		
 		TRAP_DOOR.putProperty("half", "bottom");
 		PISTON_EXTENSION.putProperty("short", "false");
@@ -342,13 +395,26 @@ public enum BlockID {
 		ACACIA_WOODEN_STEP_TOP.putProperty("type", "top");
 		DARK_OAK_WOODEN_STEP_TOP.putProperty("type", "top");
 
+		TRIPWIRE_HOOK.putProperty("attached", "false");
+		TRIPWIRE_HOOK.putProperty("facing", "north");
+		TRIPWIRE_HOOK.putProperty("powered", "false");
 
+		TRIPWIRE.putProperty("attached", "false");
+		TRIPWIRE.putProperty("disarmed", "false");
+		TRIPWIRE.putProperty("east", "false");
+		TRIPWIRE.putProperty("north", "false");
+		TRIPWIRE.putProperty("powered", "false");
+		TRIPWIRE.putProperty("south", "false");
+		TRIPWIRE.putProperty("west", "false");
+
+		COMMAND_BLOCK.putProperty("facing", "north");
+		COMMAND_BLOCK.putProperty("conditional", "false");
 
 		// TODO temporary lazy hack
-		REDSTONE_WIRE.putProperty("east", "side");
-		REDSTONE_WIRE.putProperty("west", "side");
-		REDSTONE_WIRE.putProperty("south", "side");
-		REDSTONE_WIRE.putProperty("north", "side");
+//		REDSTONE_WIRE.putProperty("east", "side");
+//		REDSTONE_WIRE.putProperty("west", "side");
+//		REDSTONE_WIRE.putProperty("south", "side");
+//		REDSTONE_WIRE.putProperty("north", "side");
 	}
 	
 	public static boolean isFlammable(int i) {
@@ -366,12 +432,13 @@ public enum BlockID {
 	
 	public static boolean isOpaque(BlockID bid) {
 		return (bid == AIR || bid == YELLOW_FLOWER || bid == RED_ROSE || bid == TORCH_WALL || bid == TORCH_GROUND ||
-				bid == REDSTONE_TORCH_ON_WALL || bid == REDSTONE_TORCH_ON_GROUND || bid == REDSTONE_TORCH_OFF_WALL || 
-				bid == REDSTONE_TORCH_OFF_GROUND || bid == LEVER || bid == LADDER || bid == VINES || bid == MOB_SPAWNER || bid == PORTAL || 
-				bid == SUGAR_CANE_BLOCK || bid == SIGN_POST || bid == WALL_SIGN || bid == SOIL || bid == CROPS || 
+				bid == REDSTONE_TORCH_ON_WALL || bid == REDSTONE_TORCH_ON_GROUND || bid == REDSTONE_TORCH_OFF_WALL ||
+				bid == REDSTONE_TORCH_OFF_GROUND || bid == LEVER || bid == LADDER || bid == VINES || bid == MOB_SPAWNER || bid == PORTAL ||
+				bid == SUGAR_CANE_BLOCK || bid == SIGN_POST || bid == WALL_SIGN || bid == SOIL || bid == CROPS ||
+				bid == CARROTS || bid == POTATOES ||
 				bid == SNOW || bid == WEB || bid == REDSTONE_WIRE || bid == STONE_PLATE || bid == WOOD_PLATE ||
-				bid == FIRE || bid == FENCE || bid == WOODEN_DOOR || bid == IRON_DOOR_BLOCK || bid == CACTUS || 
-				bid == CAKE_BLOCK || bid == STONE_BUTTON || bid == BED || bid == TRAP_DOOR || bid == GLASS || bid == GLASS_PANE || bid == IRON_BARS || bid == LILY_PAD ||
+				bid == FIRE || bid == FENCE || bid == WOODEN_DOOR || bid == IRON_DOOR_BLOCK || bid == CACTUS ||
+				bid == CAKE_BLOCK || bid == STONE_BUTTON || bid == WOODEN_BUTTON || bid == BED || bid == TRAP_DOOR || bid == GLASS || bid == GLASS_PANE || bid == IRON_BARS || bid == LILY_PAD ||
 				isStair(bid) || isRail(bid) || isLeaves(bid) || isFluid(bid) || isPistonVariant(bid)) ? false : true;
 	}
 	
@@ -403,7 +470,8 @@ public enum BlockID {
 	}
 	
 	protected static boolean isStair(BlockID bid) {
-		return bid == COBBLESTONE_STAIRS || bid == WOOD_STAIRS || bid == NETHER_BRICK_STAIRS || bid == BRICK_STAIRS || bid == STONE_BRICK_STAIRS;
+		return bid == COBBLESTONE_STAIRS || bid == WOOD_STAIRS || bid == NETHER_BRICK_STAIRS || bid == BRICK_STAIRS || bid == STONE_BRICK_STAIRS
+				|| bid == SANDSTONE_STAIRS || bid == BIRCH_STAIRS || bid == SPRUCE_STAIRS || bid == JUNGLE_STAIRS;
 	}
 	
 	protected static boolean isCobbleContainerBlock(BlockID bid) {
@@ -444,14 +512,14 @@ public enum BlockID {
 //		}
 		
 		if (bid == BlockID.BED) {
-			
+
 			if (metadata < 8)
 				properties.put("part", "foot");
 			else
 				properties.put("part", "head");
-			
+
 			metadata %= 4;
-			
+
 			if (metadata == 0)
 				properties.put("facing", "south");
 			else if (metadata == 1)
@@ -460,24 +528,34 @@ public enum BlockID {
 				properties.put("facing", "north");
 			else if (metadata == 3)
 				properties.put("facing", "east");
-			
+		} else if (bid == BlockID.TRIPWIRE_HOOK) {
+			properties.put("attached", ((metadata & 0x4) != 0) ? "true" : "false");
+			properties.put("powered",  ((metadata & 0x8) != 0) ? "true" : "false");
+			switch (metadata & 0x3) {
+				case 0: properties.put("facing", "south"); break;
+				case 1: properties.put("facing", "west"); break;
+				case 2: properties.put("facing", "north"); break;
+				case 3: properties.put("facing", "east"); break;
+			}
 		} else if (isFluid(bid)) {
 			
 			metadata %= 15;
 			
 			properties.put("level", "" + metadata);
-			
+
 		} else if (isStair(bid)) {
-			
-			if (metadata == 0)
-				properties.put("facing", "east");
-			else if (metadata == 1)
-				properties.put("facing", "west");
-			else if (metadata == 2)
-				properties.put("facing", "south");
-			else if (metadata == 3)
-				properties.put("facing", "north");
-			
+			int facing = metadata & 0x3;
+			int halfBit = (metadata & 0x4);
+
+			if (facing == 0) properties.put("facing", "east");
+			else if (facing == 1) properties.put("facing", "west");
+			else if (facing == 2) properties.put("facing", "south");
+			else if (facing == 3) properties.put("facing", "north");
+
+			if (halfBit != 0) properties.put("half", "top");
+			else properties.put("half", "bottom");
+
+			properties.put("shape", "straight");
 		} else if (isPumpkin(bid)) {
 			
 			if (metadata == 0)
@@ -568,7 +646,7 @@ public enum BlockID {
 			// b1.7.3 counts from 0, modern versions count from 1
 			properties.put("layers", "" + (metadata + 1));
 			
-		} else if (bid == BlockID.STONE_BUTTON) {
+		} else if (bid == BlockID.STONE_BUTTON || bid == BlockID.WOODEN_BUTTON) {
 			
 			if (metadata < 8)
 				properties.put("powered", "false");
@@ -619,7 +697,7 @@ public enum BlockID {
 			else
 				properties.put("moisture", "0");
 			
-		} else if (bid == BlockID.CROPS) {
+		} else if (bid == BlockID.CROPS || bid == BlockID.POTATOES || bid == BlockID.CARROTS) {
 			
 			properties.put("age", "" + metadata);
 			

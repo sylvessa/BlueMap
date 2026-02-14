@@ -14,12 +14,11 @@ import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class ChunkAnvil12 extends MCAChunk {
-
 	private boolean isGenerated;
 	private long inhabitedTime;
 	private Section[] sections;
 	private byte[] biomes;
-	private Map<Long, CompoundTag> tileEntities;
+	private final Map<Long, CompoundTag> tileEntities;
 
 	public ChunkAnvil12(MCAWorld world, CompoundTag chunkTag) {
 		super(world, chunkTag);
@@ -45,8 +44,6 @@ public class ChunkAnvil12 extends MCAChunk {
 
 		this.tileEntities = new HashMap<>();
 
-		// todo: does this even work?
-		// i wrote this on a whim and never tested it
 		ListTag<CompoundTag> tiles = (ListTag<CompoundTag>) level.getListTag("TileEntities");
 		if (tiles != null) {
 			for (CompoundTag te : tiles) {
@@ -120,7 +117,6 @@ public class ChunkAnvil12 extends MCAChunk {
 	}
 
 	private static class Section {
-
 		private int y;
 		private byte[] blocks;
 		private byte[] data;
@@ -147,6 +143,7 @@ public class ChunkAnvil12 extends MCAChunk {
 		}
 
 		public BlockState getBlockState(int x, int y, int z, Section[] sections, int sectionIndex, ChunkAnvil12 chunk) {
+			int ox = x; int oz = z;
 			x &= 0xF;
 			z &= 0xF;
 			int localY = y & 0xF;
@@ -162,94 +159,76 @@ public class ChunkAnvil12 extends MCAChunk {
 
 			BlockState baseState = BlockState.of(bid.getModernId(), BlockID.metadataToProperties(bid, meta));
 
-			// gather neighbors
-			int[] horizontal = {
-				getBlockIdNearby(x, localY, z, -1, 0, 0),
-				getBlockIdNearby(x, localY, z, 1, 0, 0),
-				getBlockIdNearby(x, localY, z, 0, 0, -1),
-				getBlockIdNearby(x, localY, z, 0, 0, 1)
-			};
+			int[][][][] neighbors = new int[3][3][3][2]; // [layer][row][col][0=id,1=meta]
 
-			int above = 0;
-			if (localY + 1 < 16 && sections[sectionIndex] != null)
-				above = blocks[(localY + 1) * 256 + z * 16 + x] & 0xFF;
-			else if (sectionIndex + 1 < 16 && sections[sectionIndex + 1] != null)
-				above = sections[sectionIndex + 1].blocks[z * 16 + x] & 0xFF;
+			for (int dy = -1; dy <= 1; dy++) {
+				int ny = y + dy;
+				int sectionIdx = ny >> 4;
+				int localNY = ny & 0xF;
+				Section sec = (sectionIdx >= 0 && sectionIdx < 16) ? sections[sectionIdx] : null;
 
-			int[] vertical = {above, 0};
+				for (int dz = -1; dz <= 1; dz++) {
+					int nz = z + dz;
+					for (int dx = -1; dx <= 1; dx++) {
+						int nx = x + dx;
+						if (sec == null || localNY < 0 || localNY > 15 || nx < 0 || nx > 15 || nz < 0 || nz > 15) {
+							neighbors[dy+1][dz+1][dx+1][0] = 0;
+							neighbors[dy+1][dz+1][dx+1][1] = 0;
+						} else {
+							int index = localNY * 256 + (nz & 0xF) * 16 + (nx & 0xF);
+							int nid = sec.blocks[index] & 0xFF;
+							int nmeta = (sec.data != null && sec.data.length > 0) ? getNibble(sec.data, index) : 0;
+							if (sec.add != null && sec.add.length > 0) nid |= getNibble(sec.add, index) << 8;
+							neighbors[dy+1][dz+1][dx+1][0] = nid;
+							neighbors[dy+1][dz+1][dx+1][1] = nmeta;
+						}
+					}
+				}
+			}
 
-			return BlockPropertyHelper.applySpecialProperties(id, meta, x, y, z,
-				new int[][] { horizontal, vertical }, baseState);
+			return BlockPropertyHelper.applySpecialProperties(id, meta, x, y, z, neighbors, baseState, chunk.getTileEntity(ox, y, oz));
 		}
 
 		public LightData getLightData(int x, int y, int z, LightData target) {
-			x &= 0xF;
+			x &= 0xF; z &= 0xF;
 			y &= 0xF;
-			z &= 0xF;
 			int i = y * 256 + z * 16 + x;
 
 			int blockLightVal = getNibble(blockLight, i);
 			int skyLightVal = getNibble(skyLight, i);
 
 			int id = blocks[i] & 0xFF;
+			boolean opaque = BlockID.isOpaque(BlockID.query(id)) && id > 0;
 
-			if (id == 44 || id == 53 || id == 67 || id == 126) {
-				blockLightVal = Math.max(blockLightVal,
-						Math.max(getBlockLightSafe(x - 1, y, z),
-								Math.max(getBlockLightSafe(x + 1, y, z),
-										Math.max(getBlockLightSafe(x, y, z - 1),
-												Math.max(getBlockLightSafe(x, y, z + 1),
-														getBlockLightSafe(x, y + 1, z))))));
+			int decay = 1;
 
-				skyLightVal = Math.max(skyLightVal,
-						Math.max(getSkyLightSafe(x - 1, y, z),
-								Math.max(getSkyLightSafe(x + 1, y, z),
-										Math.max(getSkyLightSafe(x, y, z - 1),
-												Math.max(getSkyLightSafe(x, y, z + 1),
-														getSkyLightSafe(x, y + 1, z))))));
+			if (opaque) {
+				blockLightVal = Math.max(0, blockLightVal - decay);
+				skyLightVal = Math.max(0, skyLightVal - decay);
 			}
 
-			if (!BlockID.isOpaque(BlockID.query(id, 0))) {
-				skyLightVal = Math.max(skyLightVal,
-					Math.max(getSkyLightSafe(x - 1, y, z),
-						Math.max(getSkyLightSafe(x + 1, y, z),
-							Math.max(getSkyLightSafe(x, y, z - 1),
-								Math.max(getSkyLightSafe(x, y, z + 1),
-									getSkyLightSafe(x, y + 1, z))))));
+			for (int dx = -1; dx <= 1; dx++) {
+				for (int dz = -1; dz <= 1; dz++) {
+					for (int dy = -1; dy <= 1; dy++) {
+						if (dx == 0 && dy == 0 && dz == 0) continue;
 
-				blockLightVal = Math.max(blockLightVal,
-					Math.max(getBlockLightSafe(x - 1, y, z),
-						Math.max(getBlockLightSafe(x + 1, y, z),
-							Math.max(getBlockLightSafe(x, y, z - 1),
-								Math.max(getBlockLightSafe(x, y, z + 1),
-									getBlockLightSafe(x, y + 1, z))))));
+						int nx = x + dx;
+						int ny = y + dy;
+						int nz = z + dz;
+
+						if (nx < 0 || nx > 15 || ny < 0 || ny > 15 || nz < 0 || nz > 15) continue;
+
+						int neighborIdx = ny * 256 + nz * 16 + nx;
+						int neighborBlockLight = getNibble(blockLight, neighborIdx);
+						int neighborSkyLight = getNibble(skyLight, neighborIdx);
+
+						blockLightVal = Math.max(blockLightVal, Math.max(0, neighborBlockLight - decay));
+						skyLightVal = Math.max(skyLightVal, Math.max(0, neighborSkyLight - decay));
+					}
+				}
 			}
 
 			return target.set(skyLightVal, blockLightVal);
-		}
-
-		private int getBlockLightSafe(int x, int y, int z) {
-			try {
-				return getNibble(blockLight, (y & 0xF) * 256 + (z & 0xF) * 16 + (x & 0xF));
-			} catch (Exception e) { return 0; }
-		}
-
-		private int getSkyLightSafe(int x, int y, int z) {
-			try {
-				return getNibble(skyLight, (y & 0xF) * 256 + (z & 0xF) * 16 + (x & 0xF));
-			} catch (Exception e) { return 15; }
-		}
-
-		private int getBlockIdNearby(int x, int y, int z, int dx, int dy, int dz) {
-			int nx = (x + dx) & 0xF;
-			int ny = (y & 0xF) + dy;
-			int nz = (z + dz) & 0xF;
-
-			if (ny < 0 || ny > 15) return 0;
-			if (nx < 0 || nx > 15) return 0;
-			if (nz < 0 || nz > 15) return 0;
-
-			return blocks[ny * 256 + nz * 16 + nx] & 0xFF;
 		}
 	}
 }
