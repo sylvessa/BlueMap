@@ -153,13 +153,13 @@ public enum BlockID {
 	SOIL(60, "minecraft:farmland"),
 	FURNACE(61, "minecraft:furnace"),
 	BURNING_FURNACE(62, "minecraft:furnace"),
-	SIGN_POST(63, "minecraft:oak_sign"),
+	SIGN_POST(63, "minecraft:sign"),
 	WOODEN_DOOR(64, "minecraft:oak_door"),
 	LADDER(65, "minecraft:ladder"),
 	RAILS(66, "minecraft:rail"),
 	COBBLESTONE_STAIRS(67, "minecraft:cobblestone_stairs"),
 	//COBBLESTONE_STAIRS_INVISIBLE(67, 5, "minecraft:barrier"),
-	WALL_SIGN(68, "minecraft:oak_wall_sign"),
+	WALL_SIGN(68, "minecraft:wall_sign"),
 	LEVER(69, "minecraft:lever"),
 	STONE_PLATE(70, "minecraft:stone_pressure_plate"),
 	IRON_DOOR_BLOCK(71, "minecraft:iron_door"),
@@ -203,13 +203,13 @@ public enum BlockID {
 	MELON_STEM(105, "minecraft:melon_stem"),
 	VINES(106, "minecraft:vine"),
 	FENCE_GATE(107, "minecraft:oak_fence_gate"),
-	BRICK_STAIRS(108, "minecraft:bricks"),
-	STONE_BRICK_STAIRS(109, "minecraft:stone_bricks"),
+	BRICK_STAIRS(108, "minecraft:brick_stairs"),
+	STONE_BRICK_STAIRS(109, "minecraft:stone_brick_stairs"),
 	MYCELIUM(110, "minecraft:mycelium"),
 	LILY_PAD(111, "minecraft:lily_pad"),
 	NETHER_BRICK(112, "minecraft:nether_bricks"),
-	NETHER_BRICK_FENCE(113, "minecraft:nether_bricks"),
-	NETHER_BRICK_STAIRS(114, "minecraft:nether_bricks"),
+	NETHER_BRICK_FENCE(113, "minecraft:nether_brick_fence"),
+	NETHER_BRICK_STAIRS(114, "minecraft:nether_brick_stairs"),
 	NETHER_WART(115, "minecraft:nether_wart"),
 	ENCHANTMENT_TABLE(116, "minecraft:enchanting_table"),
 	BREWING_STAND(117, "minecraft:brewing_stand"),
@@ -528,7 +528,7 @@ public enum BlockID {
 				bid == PURPLE_WOOL || bid == BLUE_WOOL || bid == BROWN_WOOL || bid == GREEN_WOOL || bid == RED_WOOL || 
 				bid == BLACK_WOOL;
 	}
-	
+
 	protected static boolean isTallgrass(BlockID bid) {
 		return bid == LONG_GRASS || bid == DEAD_BUSH_ON_GRASS || bid == FERN;
 	}
@@ -610,13 +610,34 @@ public enum BlockID {
 				properties.put("facing", "east");
 		} else if (bid == BlockID.TRIPWIRE_HOOK) {
 			properties.put("attached", ((metadata & 0x4) != 0) ? "true" : "false");
-			properties.put("powered",  ((metadata & 0x8) != 0) ? "true" : "false");
+			properties.put("powered", ((metadata & 0x8) != 0) ? "true" : "false");
+			switch (metadata & 0x3) {
+				case 0:
+					properties.put("facing", "south");
+					break;
+				case 1:
+					properties.put("facing", "west");
+					break;
+				case 2:
+					properties.put("facing", "north");
+					break;
+				case 3:
+					properties.put("facing", "east");
+					break;
+			}
+		} else if (bid == BlockID.FENCE_GATE) {
+
+			properties.put("open", (metadata & 0x4) != 0 ? "true" : "false");
+			properties.put("powered", "false");
+
 			switch (metadata & 0x3) {
 				case 0: properties.put("facing", "south"); break;
 				case 1: properties.put("facing", "west"); break;
 				case 2: properties.put("facing", "north"); break;
 				case 3: properties.put("facing", "east"); break;
 			}
+
+			properties.put("in_wall", "false");
 		} else if (isFluid(bid)) {
 			
 			metadata %= 15;

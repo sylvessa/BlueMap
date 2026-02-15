@@ -215,7 +215,7 @@ public class ChunkMcRegion extends MCRChunk {
                 }
             }
 
-            return BlockPropertyHelper.applySpecialProperties(blockId, metadata, ox, y, oz, neighbors, baseState, chunk.getTileEntity(ox, y, oz));
+            return BlockPropertyHelper.applySpecialProperties(blockId, metadata, ox, y, oz, neighbors, baseState, chunk.getTileEntity(ox, y, oz), false);
 		}
 
         public LightData getLightData(int x, int y, int z, LightData target) {

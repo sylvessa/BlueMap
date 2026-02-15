@@ -186,7 +186,7 @@ public class ChunkAnvil12 extends MCAChunk {
 				}
 			}
 
-			return BlockPropertyHelper.applySpecialProperties(id, meta, x, y, z, neighbors, baseState, chunk.getTileEntity(ox, y, oz));
+			return BlockPropertyHelper.applySpecialProperties(id, meta, x, y, z, neighbors, baseState, chunk.getTileEntity(ox, y, oz), true);
 		}
 
 		public LightData getLightData(int x, int y, int z, LightData target) {

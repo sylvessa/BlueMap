@@ -9,11 +9,17 @@ import net.querz.nbt.StringTag;
 import java.util.Map;
 
 public final class BlockPropertyHelper {
-
-	public static BlockState applySpecialProperties(int blockId, int meta, int x, int y, int z,
-													int[][][][] neighbors, BlockState baseState,
-													CompoundTag tileEntity) {
-
+	public static BlockState applySpecialProperties(
+		int blockId, 
+		int meta, 
+		int x, 
+		int y, 
+		int z,
+		int[][][][] neighbors, BlockState baseState,
+		CompoundTag tileEntity,
+		boolean isMCA
+	) {
+		// dynamic property adder
 		Map<String, String> props = baseState.getProperties();
 
 		int[][] below = new int[3][3];
@@ -112,63 +118,70 @@ public final class BlockPropertyHelper {
 				break;
 
 			case 64: case 71: // doors
-//				props.put("hinge", "left");
-//				props.put("powered", "false");
-//				props.put("half", (meta < 8) ? "lower" : "upper");
-//				meta %= 8;
-//				props.put("open", (meta < 4) ? "false" : "true");
-//				meta %= 4;
-//				switch (meta) {
-//					case 0: props.put("facing", "east"); break;
-//					case 1: props.put("facing", "south"); break;
-//					case 2: props.put("facing", "west"); break;
-//					default: props.put("facing", "north"); break;
-//				}
-				boolean isTop = (meta & 0x8) != 0;
+				if (isMCA) {
+					// they changed how doors work starting 1.2 (gay)
+					boolean isTop = (meta & 0x8) != 0;
 
-				if (isTop) {
-					props.put("half", "upper");
+					int bottomMeta = meta;
+					int topMeta = meta;
 
-					props.put("hinge", (meta & 0x1) != 0 ? "left" : "right");
-					props.put("powered", "false");
+					if (isTop) {
+						props.put("half", "upper");
 
-					if (below[1][1] == blockId) {
-						int bottomMeta = belowMeta[1][1];
+						props.put("hinge", (meta & 0x1) != 0 ? "left" : "right");
+						props.put("powered", "false");
 
-						props.put("open", (bottomMeta & 0x4) != 0 ? "true" : "false");
+						if (below[1][1] == blockId) {
+							bottomMeta = belowMeta[1][1];
+						}
+					} else {
+						props.put("half", "lower");
+						props.put("open", (meta & 0x4) != 0 ? "true" : "false");
 
-						switch (bottomMeta & 0x3) {
-							case 0: props.put("facing", "west"); break;
-							case 1: props.put("facing", "north"); break;
-							case 2: props.put("facing", "east"); break;
-							case 3: props.put("facing", "south"); break;
+						if (above[1][1] == blockId) {
+							topMeta = aboveMeta[1][1];
+							props.put("hinge", (topMeta & 0x1) != 0 ? "left" : "right");
+							props.put("powered", "false");
 						}
 					}
-				} else {
-					props.put("half", "lower");
 
-					props.put("open", (meta & 0x4) != 0 ? "true" : "false");
+					boolean open = (bottomMeta & 0x4) != 0;
+					boolean hingeLeft = (topMeta & 0x1) != 0;
 
-					switch (meta & 0x3) {
+					int dir = bottomMeta & 0x3;
+
+					if (open) {
+						if (hingeLeft) dir = (dir + 3) & 3; // ccw
+						else dir = (dir + 1) & 3; // cw
+					}
+
+					switch (dir) {
 						case 0: props.put("facing", "west"); break;
 						case 1: props.put("facing", "north"); break;
 						case 2: props.put("facing", "east"); break;
 						case 3: props.put("facing", "south"); break;
 					}
-
-					if (above[1][1] == blockId) {
-						int topMeta = aboveMeta[1][1];
-						props.put("hinge", (topMeta & 0x1) != 0 ? "left" : "right");
-						props.put("powered", "false");
+				} else {
+					props.put("hinge", "left");
+					props.put("powered", "false");
+					props.put("half", (meta < 8) ? "lower" : "upper");
+					meta %= 8;
+					props.put("open", (meta < 4) ? "false" : "true");
+					meta %= 4;
+					switch (meta) {
+						case 0: props.put("facing", "east"); break;
+						case 1: props.put("facing", "south"); break;
+						case 2: props.put("facing", "west"); break;
+						default: props.put("facing", "north"); break;
 					}
 				}
 				break;
 
-			case 85: // fences
-				props.put("west",  same[1][0] == 85 ? "true" : "false");
-				props.put("east",  same[1][2] == 85 ? "true" : "false");
-				props.put("north", same[0][1] == 85 ? "true" : "false");
-				props.put("south", same[2][1] == 85 ? "true" : "false");
+			case 85: case 113: // fences
+				props.put("west",  same[1][0] == 85 || same[1][0] == 107 || same[1][0] == 113 ? "true" : "false");
+				props.put("east",  same[1][2] == 85 || same[1][2] == 107 || same[1][2] == 113 ? "true" : "false");
+				props.put("north", same[0][1] == 85 || same[0][1] == 107 || same[0][1] == 113 ? "true" : "false");
+				props.put("south", same[2][1] == 85 || same[2][1] == 107 || same[2][1] == 113 ? "true" : "false");
 				break;
 
 			case 90: // nether portal
